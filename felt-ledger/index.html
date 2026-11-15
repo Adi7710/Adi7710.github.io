@@ -178,6 +178,8 @@ body.readonly [data-write]{display:none!important}
     <button class="tab" role="tab" id="tab-home" aria-selected="true" data-view="home">Standings</button>
     <button data-write class="tab" role="tab" id="tab-game" aria-selected="false" data-view="game">New game</button>
     <button class="tab" role="tab" id="tab-history" aria-selected="false" data-view="history">History &amp; charts</button>
+    <span style="flex:1"></span>
+    <button class="btn sm" id="btn-auth" hidden>Sign in to log games</button>
   </nav>
 
   <!-- HOME -->
@@ -194,6 +196,7 @@ body.readonly [data-write]{display:none!important}
       <p class="muted" style="margin:0 0 8px;font-size:.85rem">Tap a player for their profile. <span id="asof"></span></p>
       <div style="overflow-x:auto"><table id="standings"><thead><tr><th></th><th>Player</th><th class="r">Net</th><th style="width:30%"></th><th class="r">Played</th><th class="r">Form</th></tr></thead><tbody></tbody></table></div>
       <p class="muted" id="opening-note" style="font-size:.85rem;margin:12px 0 0"></p>
+      <div class="row" id="import-row" hidden style="margin-top:10px"><button class="btn primary" id="btn-import">Load ledger history into the database (one time)</button></div>
     </div>
 
     <div class="card" data-write>
@@ -218,7 +221,7 @@ body.readonly [data-write]{display:none!important}
     <div class="card">
       <details id="settle-details">
         <summary><h2>Settle up: who pays whom</h2></summary>
-        <p class="muted" style="margin:8px 0 12px;font-size:.9rem">Fewest payments that bring everyone to zero from the current ledger. Based on the current ledger.</p>
+        <p class="muted" style="margin:8px 0 12px;font-size:.9rem">Fewest payments that bring everyone to zero from the current ledger. Nothing is written when you view this; use "Mark all as settled" only if the group actually pays out.</p>
         <div id="settle"></div>
         <div class="row" style="margin-top:12px;justify-content:space-between">
           <button class="btn sm" id="settle-copy">Copy payment list</button>
@@ -266,10 +269,14 @@ body.readonly [data-write]{display:none!important}
     </div>
   </section>
 </div>
-<p class="foot">Felt Ledger · read-only view of the group ledger · blinds $0.05 / $0.10</p>
+<p class="foot">Felt Ledger · blinds $0.05 / $0.10</p>
 <div class="toast" id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
 <script>
 (function(){
 "use strict";
@@ -781,12 +788,50 @@ setView(view);
 (async()=>{
   document.body.classList.add("readonly");
   if(view==="game"){view="home";setView("home")}
-  try{
-    const r=await fetch("data.json",{cache:"no-store"}); const d=await r.json();
-    opening=d.opening||opening; players=d.players||[]; sessions=d.sessions||[];
-    $("#asof").textContent=d.exportedAt?`Updated ${d.exportedAt}.`:"";
-    rerender();
-  }catch(e){ $("#opening-note").textContent="Couldn't load the ledger data."; }
+  const cfg=window.FELT_FIREBASE||{};
+  const editors=(cfg.editors||[]).map(e=>String(e).toLowerCase());
+  async function loadSnapshot(){
+    try{const r=await fetch("data.json",{cache:"no-store"});const d=await r.json();
+      opening=d.opening||opening;players=d.players||[];sessions=d.sessions||[];
+      $("#asof").textContent=d.exportedAt?`Snapshot from ${d.exportedAt}.`:"";rerender();return d;
+    }catch(e){$("#opening-note").textContent="Couldn't load the ledger data.";return null}
+  }
+  if(!cfg.apiKey||typeof firebase==="undefined"){ await loadSnapshot(); return; }
+  firebase.initializeApp(cfg);
+  const fdb=firebase.firestore(); const auth=firebase.auth();
+  let canEdit=false, loaded={opening:false,sessions:false};
+  const showImport=()=>{$("#import-row").hidden=!(canEdit&&loaded.sessions&&sessions.length===0)};
+  fdb.doc("meta/opening").onSnapshot(s=>{if(s.exists)opening=s.data();loaded.opening=true;rerender()},e=>console.error(e));
+  fdb.doc("meta/settings").onSnapshot(s=>{if(s.exists)settings={...settings,...s.data()}},()=>{});
+  fdb.collection("players").onSnapshot(s=>{players=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.createdAt||"").localeCompare(b.createdAt||""));rerender()},e=>console.error(e));
+  fdb.collection("sessions").onSnapshot(s=>{sessions=s.docs.map(d=>({id:d.id,...d.data()}));loaded.sessions=true;$("#asof").textContent="Live.";showImport();rerender()},e=>console.error(e));
+  const btn=$("#btn-auth"); btn.hidden=false;
+  auth.onAuthStateChanged(u=>{
+    canEdit=!!u&&editors.includes((u.email||"").toLowerCase());
+    db=canEdit?fdb:null;
+    document.body.classList.toggle("readonly",!canEdit);
+    btn.textContent=u?`${u.email.split("@")[0]} · Sign out`:"Sign in to log games";
+    if(u&&!canEdit) toast("This account can view but not log games");
+    if(!canEdit&&view==="game") setView("home");
+    showImport(); rerender();
+  });
+  btn.onclick=async()=>{
+    if(auth.currentUser){await auth.signOut();toast("Signed out");return}
+    try{await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())}
+    catch(e){ if(e&&e.code==="auth/popup-blocked"){auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider())} else toast("Sign-in failed: "+(e&&e.code||"try again")) }
+  };
+  $("#btn-import").onclick=async ev=>{
+    const b=ev.target; b.disabled=true; b.textContent="Loading…";
+    try{
+      const r=await fetch("data.json",{cache:"no-store"}); const d=await r.json();
+      const batch=fdb.batch();
+      if(d.opening) batch.set(fdb.doc("meta/opening"),d.opening);
+      batch.set(fdb.doc("meta/settings"),{minPlayers:2});
+      for(const p of d.players||[]){const {id,...rest}=p;batch.set(fdb.doc("players/"+id),rest)}
+      for(const s of d.sessions||[]){const {id,...rest}=s;batch.set(fdb.doc("sessions/"+id),rest)}
+      await batch.commit(); toast("Ledger history loaded");
+    }catch(e){ toast("Import failed: "+(e&&e.code||e&&e.message||"try again")); b.disabled=false; b.textContent="Load ledger history into the database (one time)"; }
+  };
 })();
 function rerender(){ if(view==="home")renderHome(); else if(view==="history")renderHistory(); else if(wiz.step===1||wiz.step===5)renderWiz(); }
 })();
