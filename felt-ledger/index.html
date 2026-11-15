@@ -798,15 +798,18 @@ setView(view);
   }
   if(!cfg.apiKey||typeof firebase==="undefined"){ await loadSnapshot(); return; }
   firebase.initializeApp(cfg);
-  const fdb=firebase.firestore(); const auth=firebase.auth();
+  const fdb=firebase.firestore(); const auth=cfg.openAccess?null:firebase.auth();
   let canEdit=false, loaded={opening:false,sessions:false};
   const showImport=()=>{$("#import-row").hidden=!(canEdit&&loaded.sessions&&sessions.length===0)};
   fdb.doc("meta/opening").onSnapshot(s=>{if(s.exists)opening=s.data();loaded.opening=true;rerender()},e=>console.error(e));
   fdb.doc("meta/settings").onSnapshot(s=>{if(s.exists)settings={...settings,...s.data()}},()=>{});
   fdb.collection("players").onSnapshot(s=>{players=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.createdAt||"").localeCompare(b.createdAt||""));rerender()},e=>console.error(e));
   fdb.collection("sessions").onSnapshot(s=>{sessions=s.docs.map(d=>({id:d.id,...d.data()}));loaded.sessions=true;$("#asof").textContent="Live.";showImport();rerender()},e=>console.error(e));
-  const btn=$("#btn-auth"); btn.hidden=false;
-  auth.onAuthStateChanged(u=>{
+  const btn=$("#btn-auth");
+  if(cfg.openAccess){
+    canEdit=true; db=fdb; document.body.classList.remove("readonly"); showImport(); rerender();
+  } else { btn.hidden=false; }
+  if(!cfg.openAccess) auth.onAuthStateChanged(u=>{
     canEdit=!!u&&editors.includes((u.email||"").toLowerCase());
     db=canEdit?fdb:null;
     document.body.classList.toggle("readonly",!canEdit);
@@ -815,7 +818,7 @@ setView(view);
     if(!canEdit&&view==="game") setView("home");
     showImport(); rerender();
   });
-  btn.onclick=async()=>{
+  if(!cfg.openAccess) btn.onclick=async()=>{
     if(auth.currentUser){await auth.signOut();toast("Signed out");return}
     try{await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())}
     catch(e){ if(e&&e.code==="auth/popup-blocked"){auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider())} else toast("Sign-in failed: "+(e&&e.code||"try again")) }

@@ -1,13 +1,9 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Open access: anyone with the link can view and log games.
     match /{document=**} {
-      // Anyone with the link can view the ledger.
-      allow read: if true;
-      // Only these signed-in Google accounts can log games, adjustments and edits.
-      allow write: if request.auth != null
-        && request.auth.token.email_verified == true
-        && request.auth.token.email.lower() in ['adityajbhatia@gmail.com'];
+      allow read, write: if true;
     }
   }
 }
