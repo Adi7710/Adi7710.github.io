@@ -276,7 +276,7 @@ body.readonly [data-write]{display:none!important}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
+<script src="firebase-config.js?v=5"></script>
 <script>
 (function(){
 "use strict";
@@ -801,10 +801,33 @@ setView(view);
   const fdb=firebase.firestore(); const auth=cfg.openAccess?null:firebase.auth();
   let canEdit=false, loaded={opening:false,sessions:false};
   const showImport=()=>{$("#import-row").hidden=!(canEdit&&loaded.sessions&&sessions.length===0)};
-  fdb.doc("meta/opening").onSnapshot(s=>{if(s.exists)opening=s.data();loaded.opening=true;rerender()},e=>console.error(e));
+  let failed=false, autoImported=false;
+  const onFail=async e=>{
+    console.error(e); if(failed) return; failed=true;
+    canEdit=false; db=null; document.body.classList.add("readonly"); if(view==="game") setView("home");
+    await loadSnapshot();
+    $("#opening-note").innerHTML='<b style="color:var(--loss)">Saving is off:</b> the Firestore rules aren\'t published yet (Firebase → Firestore → Rules). Showing the saved snapshot until then.';
+  };
+  async function importSnapshot(auto){
+    const b=$("#btn-import"); b.disabled=true; b.textContent="Loading…";
+    try{
+      const r=await fetch("data.json",{cache:"no-store"}); const d=await r.json();
+      const batch=fdb.batch();
+      if(d.opening) batch.set(fdb.doc("meta/opening"),d.opening);
+      batch.set(fdb.doc("meta/settings"),{minPlayers:2});
+      for(const p of d.players||[]){const {id,...rest}=p;batch.set(fdb.doc("players/"+id),rest)}
+      for(const s of d.sessions||[]){const {id,...rest}=s;batch.set(fdb.doc("sessions/"+id),rest)}
+      await batch.commit(); toast(auto?"Ledger history loaded into the database":"Ledger history loaded");
+    }catch(e){ toast("Import failed: "+(e&&e.code||e&&e.message||"try again")); b.disabled=false; b.textContent="Load ledger history into the database (one time)"; if(e&&e.code==="permission-denied") onFail(e); }
+  }
+  fdb.doc("meta/opening").onSnapshot(s=>{if(s.exists)opening=s.data();loaded.opening=true;rerender()},onFail);
   fdb.doc("meta/settings").onSnapshot(s=>{if(s.exists)settings={...settings,...s.data()}},()=>{});
-  fdb.collection("players").onSnapshot(s=>{players=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.createdAt||"").localeCompare(b.createdAt||""));rerender()},e=>console.error(e));
-  fdb.collection("sessions").onSnapshot(s=>{sessions=s.docs.map(d=>({id:d.id,...d.data()}));loaded.sessions=true;$("#asof").textContent="Live.";showImport();rerender()},e=>console.error(e));
+  fdb.collection("players").onSnapshot(s=>{players=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.createdAt||"").localeCompare(b.createdAt||""));rerender()},onFail);
+  fdb.collection("sessions").onSnapshot(s=>{
+    if(failed) return;
+    sessions=s.docs.map(d=>({id:d.id,...d.data()}));loaded.sessions=true;$("#asof").textContent="Live.";
+    if(!sessions.length&&canEdit&&!autoImported&&!s.metadata.fromCache){autoImported=true;importSnapshot(true)}
+    showImport();rerender()},onFail);
   const btn=$("#btn-auth");
   if(cfg.openAccess){
     canEdit=true; db=fdb; document.body.classList.remove("readonly"); showImport(); rerender();
@@ -823,18 +846,7 @@ setView(view);
     try{await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())}
     catch(e){ if(e&&e.code==="auth/popup-blocked"){auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider())} else toast("Sign-in failed: "+(e&&e.code||"try again")) }
   };
-  $("#btn-import").onclick=async ev=>{
-    const b=ev.target; b.disabled=true; b.textContent="Loading…";
-    try{
-      const r=await fetch("data.json",{cache:"no-store"}); const d=await r.json();
-      const batch=fdb.batch();
-      if(d.opening) batch.set(fdb.doc("meta/opening"),d.opening);
-      batch.set(fdb.doc("meta/settings"),{minPlayers:2});
-      for(const p of d.players||[]){const {id,...rest}=p;batch.set(fdb.doc("players/"+id),rest)}
-      for(const s of d.sessions||[]){const {id,...rest}=s;batch.set(fdb.doc("sessions/"+id),rest)}
-      await batch.commit(); toast("Ledger history loaded");
-    }catch(e){ toast("Import failed: "+(e&&e.code||e&&e.message||"try again")); b.disabled=false; b.textContent="Load ledger history into the database (one time)"; }
-  };
+  $("#btn-import").onclick=()=>importSnapshot(false);
 })();
 function rerender(){ if(view==="home")renderHome(); else if(view==="history")renderHistory(); else if(wiz.step===1||wiz.step===5)renderWiz(); }
 })();
