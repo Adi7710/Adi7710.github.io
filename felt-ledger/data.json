@@ -1,0 +1,1582 @@
+{
+ "exportedAt": "Nov 15, 2026",
+ "opening": {
+  "asOf": "2026-08-22",
+  "balances": {
+   "Adi": 88.01,
+   "Aditya Patel": -21.53,
+   "Arpan": -9.7,
+   "Atharva Raut": 0,
+   "Harsh": 0.1,
+   "Jhanvi": -30.69,
+   "Kevin": -0.13,
+   "Kunj": 14.14,
+   "Om": 33.14,
+   "Preet": -31.25,
+   "Rakshit": -19.27,
+   "Sanat": -25.01,
+   "Sanjavan": 2.07,
+   "Smit": 16.09,
+   "Vansh": -15.97
+  },
+  "note": "Balance before the first logged session"
+ },
+ "players": [
+  {
+   "active": true,
+   "createdAt": "2026-10-03T00:00:01Z",
+   "name": "Adi",
+   "id": "adi"
+  },
+  {
+   "active": true,
+   "createdAt": "2026-10-03T00:00:02Z",
+   "name": "Om",
+   "id": "om"
+  },
+  {
+   "active": true,
+   "createdAt": "2026-10-03T00:00:03Z",
+   "name": "Kunj",
+   "id": "kunj"
+  },
+  {
+   "active": true,
+   "createdAt": "2026-10-03T00:00:04Z",
+   "name": "Smit",
+   "id": "smit"
+  },
+  {
+   "active": true,
+   "createdAt": "2026-10-03T00:00:05Z",
+   "name": "Sanjavan",
+   "id": "sanjavan"
+  },
+  {
+   "active": true,
+   "createdAt": "2026-10-03T00:00:06Z",
+   "name": "Kevin",
+   "id": "kevin"
+  },
+  {
+   "active": true,
+   "createdAt": "2026-10-03T00:00:07Z",
+   "name": "Jhanvi",
+   "id": "jhanvi"
+  },
+  {
+   "active": true,
+   "createdAt": "2026-10-03T00:00:08Z",
+   "name": "Sanat",
+   "id": "sanat"
+  },
+  {
+   "active": true,
+   "createdAt": "2026-10-03T00:00:09Z",
+   "name": "Preet",
+   "id": "preet"
+  },
+  {
+   "active": true,
+   "createdAt": "2026-10-03T00:00:10Z",
+   "name": "Rakshit",
+   "id": "rakshit"
+  },
+  {
+   "active": true,
+   "createdAt": "2026-10-03T00:00:11Z",
+   "name": "Arpan",
+   "id": "arpan"
+  },
+  {
+   "active": true,
+   "createdAt": "2026-10-03T00:00:12Z",
+   "name": "Aditya Patel",
+   "id": "aditya-patel"
+  },
+  {
+   "active": true,
+   "createdAt": "2026-10-03T00:00:13Z",
+   "name": "Vansh",
+   "id": "vansh"
+  },
+  {
+   "active": true,
+   "createdAt": "2026-10-03T00:00:14Z",
+   "name": "Harsh",
+   "id": "harsh"
+  },
+  {
+   "active": true,
+   "createdAt": "2026-10-03T00:00:15Z",
+   "name": "Atharva Raut",
+   "id": "atharva-raut"
+  }
+ ],
+ "sessions": [
+  {
+   "approxDate": false,
+   "createdAt": "2026-10-27T04:39:01.518Z",
+   "date": "2026-10-26",
+   "kind": "adjustment",
+   "mode": "none",
+   "nets": {
+    "Adi": 3.75,
+    "Jhanvi": -3.75
+   },
+   "note": "Two players played together as a team",
+   "stake": 0,
+   "id": "a1793075941518"
+  },
+  {
+   "approxDate": true,
+   "createdAt": "2026-08-23T23:00:00Z",
+   "date": "2026-08-23",
+   "kind": "game",
+   "mode": "losers-safe",
+   "nets": {
+    "Adi": 10.16,
+    "Jhanvi": -4.3,
+    "Kevin": 8.42,
+    "Kunj": -8.5,
+    "Sanat": -5.5,
+    "Sanjavan": -3.2,
+    "Smit": 2.92
+   },
+   "note": "Gap settled on winners (weighted)",
+   "stake": 10,
+   "id": "h01"
+  },
+  {
+   "approxDate": true,
+   "createdAt": "2026-08-25T23:00:00Z",
+   "date": "2026-08-25",
+   "kind": "game",
+   "mode": "none",
+   "nets": {
+    "Adi": 0.25,
+    "Kevin": 2.45,
+    "Kunj": 6.75,
+    "Preet": -22,
+    "Sanat": 13.05,
+    "Smit": -0.5
+   },
+   "note": "",
+   "stake": 10,
+   "id": "h02"
+  },
+  {
+   "approxDate": true,
+   "createdAt": "2026-08-27T23:00:00Z",
+   "date": "2026-08-27",
+   "kind": "game",
+   "mode": "none",
+   "nets": {
+    "Adi": 0.5,
+    "Arpan": -14.95,
+    "Harsh": -2.95,
+    "Jhanvi": 12.45,
+    "Kevin": -11,
+    "Kunj": 5.65,
+    "Sanat": -1.05,
+    "Sanjavan": 12.45,
+    "Smit": -1.1
+   },
+   "note": "Harsh's first game",
+   "stake": 10,
+   "id": "h03"
+  },
+  {
+   "approxDate": true,
+   "createdAt": "2026-08-29T23:00:00Z",
+   "date": "2026-08-29",
+   "kind": "game",
+   "mode": "none",
+   "nets": {
+    "Adi": 8.2,
+    "Jhanvi": 0.33,
+    "Kevin": 7.3,
+    "Kunj": 3.3,
+    "Preet": -11.15,
+    "Sanat": 8.2,
+    "Sanjavan": 0.32,
+    "Smit": -16.5
+   },
+   "note": "",
+   "stake": 10,
+   "id": "h04"
+  },
+  {
+   "approxDate": true,
+   "createdAt": "2026-08-31T23:00:00Z",
+   "date": "2026-08-31",
+   "kind": "game",
+   "mode": "none",
+   "nets": {
+    "Adi": 7.4,
+    "Kevin": -16.5,
+    "Kunj": 6.95,
+    "Preet": 21.7,
+    "Rakshit": -5.5,
+    "Sanat": -17.9,
+    "Sanjavan": -5.5,
+    "Smit": 9.35
+   },
+   "note": "",
+   "stake": 10,
+   "id": "h05"
+  },
+  {
+   "approxDate": true,
+   "createdAt": "2026-09-02T23:00:00Z",
+   "date": "2026-09-02",
+   "kind": "game",
+   "mode": "none",
+   "nets": {
+    "Adi": 17.8,
+    "Jhanvi": 1.6,
+    "Kevin": 0.35,
+    "Kunj": 4.6,
+    "Sanat": -6.35,
+    "Sanjavan": -4.05,
+    "Smit": -13.95
+   },
+   "note": "",
+   "stake": 10,
+   "id": "h06"
+  },
+  {
+   "approxDate": true,
+   "createdAt": "2026-09-04T23:00:00Z",
+   "date": "2026-09-04",
+   "kind": "game",
+   "mode": "none",
+   "nets": {
+    "Adi": 39.85,
+    "Arpan": 0,
+    "Jhanvi": -11,
+    "Kevin": -16.5,
+    "Kunj": -16,
+    "Preet": -8.35,
+    "Sanat": 4.7,
+    "Smit": 7.3
+   },
+   "note": "",
+   "stake": 10,
+   "id": "h07"
+  },
+  {
+   "approxDate": true,
+   "createdAt": "2026-09-05T23:00:00Z",
+   "date": "2026-09-05",
+   "kind": "adjustment",
+   "mode": "none",
+   "nets": {
+    "Adi": -30.97,
+    "Jhanvi": 30.97
+   },
+   "note": "Adjustment: Jhanvi settled in full from Adi",
+   "stake": 0,
+   "id": "h08"
+  },
+  {
+   "approxDate": true,
+   "createdAt": "2026-09-07T23:00:00Z",
+   "date": "2026-09-07",
+   "kind": "game",
+   "mode": "losers-safe",
+   "nets": {
+    "Adi": 4.38,
+    "Jhanvi": -4.3,
+    "Kevin": 1.27,
+    "Kunj": -5.5,
+    "Preet": 3.16,
+    "Sanat": -6.5,
+    "Sanjavan": 6.22,
+    "Smit": 1.27
+   },
+   "note": "Gap settled on winners (weighted)",
+   "stake": 10,
+   "id": "h09"
+  },
+  {
+   "approxDate": true,
+   "createdAt": "2026-09-09T23:00:00Z",
+   "date": "2026-09-09",
+   "kind": "game",
+   "mode": "none",
+   "nets": {
+    "Adi": -11,
+    "Jhanvi": -1.65,
+    "Kevin": 6.85,
+    "Kunj": 5.5,
+    "Preet": -12.65,
+    "Sanat": 12.15,
+    "Sanjavan": -0.8,
+    "Smit": 1.6
+   },
+   "note": "",
+   "stake": 10,
+   "id": "h10"
+  },
+  {
+   "approxDate": true,
+   "createdAt": "2026-09-11T23:00:00Z",
+   "date": "2026-09-11",
+   "kind": "game",
+   "mode": "none",
+   "nets": {
+    "Adi": 3.9,
+    "Jhanvi": 2.5,
+    "Kevin": -2.45,
+    "Kunj": 2.5,
+    "Preet": 4.45,
+    "Rakshit": -11,
+    "Sanat": 3.2,
+    "Sanjavan": 7.9,
+    "Smit": -11
+   },
+   "note": "Adi's figure smoothed by 0.05",
+   "stake": 10,
+   "id": "h11"
+  },
+  {
+   "approxDate": true,
+   "createdAt": "2026-09-12T23:00:00Z",
+   "date": "2026-09-12",
+   "kind": "adjustment",
+   "mode": "none",
+   "nets": {
+    "Aditya Patel": -1.3,
+    "Kevin": 2.3,
+    "Kunj": 4,
+    "Om": -9.85,
+    "Preet": 7.1,
+    "Smit": -2.25
+   },
+   "note": "Adjustment: group corrections posted on WhatsApp",
+   "stake": 0,
+   "id": "h12"
+  },
+  {
+   "approxDate": true,
+   "createdAt": "2026-09-13T23:00:00Z",
+   "date": "2026-09-13",
+   "kind": "game",
+   "mode": "none",
+   "nets": {
+    "Adi": 13.55,
+    "Jhanvi": 2.6,
+    "Kevin": -5.5,
+    "Kunj": -6.85,
+    "Om": 1.05,
+    "Sanjavan": -11,
+    "Smit": 6.15
+   },
+   "note": "0.70 gap fixed on Adi",
+   "stake": 10,
+   "id": "h13"
+  },
+  {
+   "approxDate": true,
+   "createdAt": "2026-09-15T23:00:00Z",
+   "date": "2026-09-15",
+   "kind": "game",
+   "mode": "losers-weighted",
+   "nets": {
+    "Jhanvi": 4.85,
+    "Kevin": -5.17,
+    "Kunj": 2,
+    "Om": -17.1,
+    "Preet": 8.3,
+    "Rakshit": 11.6,
+    "Sanat": 0.8,
+    "Smit": -5.28
+   },
+   "note": "Gap settled on losers (weighted)",
+   "stake": 10,
+   "id": "h14"
+  },
+  {
+   "approxDate": true,
+   "createdAt": "2026-09-17T23:00:00Z",
+   "date": "2026-09-17",
+   "kind": "game",
+   "mode": "none",
+   "nets": {
+    "Adi": 10.7,
+    "Aditya Patel": -13.7,
+    "Kevin": -1.25,
+    "Kunj": 15.65,
+    "Sanat": -6.6,
+    "Smit": -4.8
+   },
+   "note": "",
+   "stake": 10,
+   "id": "h15"
+  },
+  {
+   "approxDate": true,
+   "createdAt": "2026-09-19T23:00:00Z",
+   "date": "2026-09-19",
+   "kind": "game",
+   "mode": "none",
+   "nets": {
+    "Adi": -5.5,
+    "Jhanvi": -5.5,
+    "Kevin": 6.5,
+    "Kunj": -27.5,
+    "Om": 12.25,
+    "Preet": -5.9,
+    "Rakshit": 25.65,
+    "Smit": 0
+   },
+   "note": "Rakshit corrected to 25.65",
+   "stake": 10,
+   "id": "h16"
+  },
+  {
+   "approxDate": true,
+   "createdAt": "2026-09-21T23:00:00Z",
+   "date": "2026-09-21",
+   "kind": "game",
+   "mode": "none",
+   "nets": {
+    "Adi": 27.2,
+    "Kevin": -5.5,
+    "Kunj": -1.1,
+    "Om": -22,
+    "Sanat": -27.55,
+    "Sanjavan": 23,
+    "Smit": 5.95
+   },
+   "note": "Gap adjusted on Sanat",
+   "stake": 10,
+   "id": "h17"
+  },
+  {
+   "approxDate": true,
+   "createdAt": "2026-09-22T23:00:00Z",
+   "date": "2026-09-22",
+   "kind": "game",
+   "mode": "none",
+   "nets": {
+    "Adi": -7.5,
+    "Jhanvi": -10,
+    "Kevin": 4.4,
+    "Kunj": 22,
+    "Om": 3.02,
+    "Preet": 16.28,
+    "Sanat": -7.3,
+    "Sanjavan": -15,
+    "Smit": -5.9
+   },
+   "note": "0.20 adjusted on Sanat",
+   "stake": 10,
+   "id": "h18"
+  },
+  {
+   "approxDate": true,
+   "createdAt": "2026-09-23T23:00:00Z",
+   "date": "2026-09-23",
+   "kind": "game",
+   "mode": "none",
+   "nets": {
+    "Adi": -4.35,
+    "Kevin": 27.55,
+    "Kunj": 10.5,
+    "Om": -22,
+    "Sanat": -22,
+    "Sanjavan": 0.5,
+    "Smit": 9.8
+   },
+   "note": "",
+   "stake": 10,
+   "id": "h19"
+  },
+  {
+   "approxDate": false,
+   "createdAt": "2026-09-24T23:00:00Z",
+   "date": "2026-09-24",
+   "kind": "game",
+   "mode": "losers-weighted",
+   "nets": {
+    "Adi": 10.5,
+    "Jhanvi": -4.47,
+    "Kevin": -2.2,
+    "Kunj": -8.94,
+    "Om": 0.35,
+    "Sanat": -4.47,
+    "Sanjavan": -4.47,
+    "Smit": 13.7
+   },
+   "note": "Gap settled on losers (weighted)",
+   "stake": 10,
+   "id": "h20"
+  },
+  {
+   "approxDate": false,
+   "createdAt": "2026-09-27T23:00:00Z",
+   "date": "2026-09-27",
+   "kind": "game",
+   "mode": "none",
+   "nets": {
+    "Adi": 10.5,
+    "Aditya Patel": 2.85,
+    "Arpan": 24.65,
+    "Atharva Raut": -5.5,
+    "Kevin": 2,
+    "Kunj": -16.5,
+    "Sanat": 8.3,
+    "Smit": -11,
+    "Vansh": -15.3
+   },
+   "note": "Atharva's first game; 10.10 gap put on Vansh",
+   "stake": 10,
+   "id": "h21"
+  },
+  {
+   "approxDate": false,
+   "createdAt": "2026-09-28T23:00:00Z",
+   "date": "2026-09-28",
+   "kind": "game",
+   "mode": "none",
+   "nets": {
+    "Adi": -1.35,
+    "Jhanvi": 12.35,
+    "Kevin": 5.5,
+    "Kunj": -16.5
+   },
+   "note": "",
+   "stake": 10,
+   "id": "h22"
+  },
+  {
+   "approxDate": false,
+   "createdAt": "2026-09-30T23:00:00Z",
+   "date": "2026-09-30",
+   "kind": "game",
+   "mode": "losers-weighted",
+   "nets": {
+    "Adi": -10.08,
+    "Jhanvi": -1.96,
+    "Kevin": -7.95,
+    "Kunj": 11.3,
+    "Om": -10.08,
+    "Rakshit": 4.7,
+    "Sanat": -3.43,
+    "Sanjavan": 0.75,
+    "Smit": 16.75
+   },
+   "note": "Gap settled on losers (weighted)",
+   "stake": 10,
+   "id": "h23"
+  },
+  {
+   "approxDate": false,
+   "createdAt": "2026-10-02T23:00:00Z",
+   "date": "2026-10-02",
+   "kind": "game",
+   "mode": "none",
+   "nets": {
+    "Adi": -1.6,
+    "Jhanvi": 3.9,
+    "Kevin": 3.25,
+    "Om": -1.5,
+    "Sanat": -40,
+    "Smit": 35.95
+   },
+   "note": "",
+   "stake": 10,
+   "id": "h24"
+  },
+  {
+   "approxDate": true,
+   "createdAt": "2026-10-05T18:14:00Z",
+   "date": "2026-10-04",
+   "kind": "game",
+   "mode": "none",
+   "nets": {
+    "Adi": 38.85,
+    "Arpan": -9.2,
+    "Jhanvi": -10,
+    "Kevin": -11.8,
+    "Kunj": 18.85,
+    "Sanat": -10,
+    "Sanjavan": -7,
+    "Smit": 3.85,
+    "Vansh": -13.55
+   },
+   "note": "From WhatsApp P&L posted Oct 5",
+   "stake": 10,
+   "id": "h25"
+  },
+  {
+   "approxDate": false,
+   "createdAt": "2026-10-07T05:36:00Z",
+   "date": "2026-10-07",
+   "kind": "adjustment",
+   "mode": "none",
+   "nets": {
+    "Harsh": 2.85,
+    "Kunj": -1.42,
+    "Smit": -1.43
+   },
+   "note": "Adjustment: Harsh's loss settled half by Smit, half by Kunj",
+   "stake": 0,
+   "id": "h26"
+  },
+  {
+   "approxDate": false,
+   "createdAt": "2026-10-12T01:19:00Z",
+   "date": "2026-10-11",
+   "kind": "game",
+   "mode": "none",
+   "nets": {
+    "Adi": 11,
+    "Jhanvi": 2.85,
+    "Kevin": -1.4,
+    "Kunj": -4.85,
+    "Rakshit": -11.25,
+    "Sanat": -3.55,
+    "Sanjavan": -10,
+    "Smit": 7.8,
+    "Vansh": 9.4
+   },
+   "note": "",
+   "stake": 10,
+   "id": "h27"
+  },
+  {
+   "approxDate": false,
+   "createdAt": "2026-10-15T03:54:00Z",
+   "date": "2026-10-15",
+   "kind": "adjustment",
+   "mode": "none",
+   "nets": {
+    "Kevin": 24.55,
+    "Kunj": -24.55
+   },
+   "note": "Adjustment: Kunj settled Kevin's balance in full",
+   "stake": 0,
+   "id": "h28"
+  },
+  {
+   "approxDate": false,
+   "createdAt": "2026-10-23T06:12:00Z",
+   "date": "2026-10-23",
+   "kind": "adjustment",
+   "mode": "none",
+   "nets": {
+    "Jhanvi": -5,
+    "Smit": 5
+   },
+   "note": "Adjustment: Smit +5, Jhanvi -5",
+   "stake": 0,
+   "id": "h29"
+  },
+  {
+   "approxDate": false,
+   "createdAt": "2026-10-26T17:39:00Z",
+   "date": "2026-10-25",
+   "kind": "game",
+   "mode": "losers-weighted",
+   "nets": {
+    "Adi": 1.55,
+    "Harsh": -7.22,
+    "Jhanvi": 5.15,
+    "Kunj": 5.15,
+    "Om": 5.25,
+    "Sanat": -11.38,
+    "Smit": 1.5
+   },
+   "note": "Logged from WhatsApp; 0.60 gap cut from losers (weighted)",
+   "raw": {
+    "Adi": 1.55,
+    "Harsh": -7.45,
+    "Jhanvi": 5.15,
+    "Kunj": 5.15,
+    "Om": 5.25,
+    "Sanat": -11.75,
+    "Smit": 1.5
+   },
+   "stake": 10,
+   "id": "h30"
+  },
+  {
+   "buyins": {
+    "Adi": 2,
+    "Jhanvi": 1,
+    "Kevin": 2,
+    "Kunj": 1,
+    "Om": 3,
+    "Sanat": 2,
+    "Sanjavan": 2,
+    "Smit": 1
+   },
+   "cashouts": {
+    "Adi": 45.65,
+    "Jhanvi": 0,
+    "Kevin": 0,
+    "Kunj": 42.1,
+    "Om": 4.65,
+    "Sanat": 0,
+    "Sanjavan": 31.5,
+    "Smit": 17.65
+   },
+   "createdAt": "2026-10-07T05:31:39.043Z",
+   "date": "2026-10-07",
+   "mode": "losers-safe",
+   "nets": {
+    "Adi": 25.13,
+    "Jhanvi": -10,
+    "Kevin": -20,
+    "Kunj": 31.45,
+    "Om": -25.35,
+    "Sanat": -20,
+    "Sanjavan": 11.27,
+    "Smit": 7.5
+   },
+   "note": "",
+   "raw": {
+    "Adi": 25.65,
+    "Jhanvi": -10,
+    "Kevin": -20,
+    "Kunj": 32.1,
+    "Om": -25.35,
+    "Sanat": -20,
+    "Sanjavan": 11.5,
+    "Smit": 7.65
+   },
+   "stake": 10,
+   "id": "s1791351099043"
+  },
+  {
+   "buyins": {
+    "Adi": 1,
+    "Jhanvi": 1,
+    "Kevin": 2,
+    "Kunj": 3,
+    "Preet": 2,
+    "Sanat": 1,
+    "Smit": 2,
+    "Vansh": 3
+   },
+   "cashouts": {
+    "Adi": 24.45,
+    "Jhanvi": 11.4,
+    "Kevin": 28.65,
+    "Kunj": 18.8,
+    "Preet": 25,
+    "Sanat": 14.55,
+    "Smit": 13.35,
+    "Vansh": 13.75
+   },
+   "createdAt": "2026-10-13T03:46:29.966Z",
+   "date": "2026-10-13",
+   "mode": "losers-safe",
+   "nets": {
+    "Adi": 14.47,
+    "Jhanvi": 1.4,
+    "Kevin": 8.66,
+    "Kunj": -11.2,
+    "Preet": 5.01,
+    "Sanat": 4.56,
+    "Smit": -6.65,
+    "Vansh": -16.25
+   },
+   "note": "",
+   "raw": {
+    "Adi": 14.45,
+    "Jhanvi": 1.4,
+    "Kevin": 8.65,
+    "Kunj": -11.2,
+    "Preet": 5,
+    "Sanat": 4.55,
+    "Smit": -6.65,
+    "Vansh": -16.25
+   },
+   "stake": 10,
+   "id": "s1791863189965"
+  },
+  {
+   "buyins": {
+    "Adi": 1,
+    "Jhanvi": 1,
+    "Kevin": 2,
+    "Kunj": 2,
+    "Om": 1,
+    "Sanat": 3,
+    "Smit": 2,
+    "Vansh": 2
+   },
+   "cashouts": {
+    "Adi": 20.45,
+    "Jhanvi": 23.35,
+    "Kevin": 16,
+    "Kunj": 14.5,
+    "Om": 18.85,
+    "Sanat": 5.9,
+    "Smit": 20.6,
+    "Vansh": 20.1
+   },
+   "createdAt": "2026-10-14T04:20:38.401Z",
+   "date": "2026-10-14",
+   "mode": "losers-safe",
+   "nets": {
+    "Adi": 10.53,
+    "Jhanvi": 13.45,
+    "Kevin": -4,
+    "Kunj": -5.5,
+    "Om": 8.92,
+    "Sanat": -24.1,
+    "Smit": 0.6,
+    "Vansh": 0.1
+   },
+   "note": "",
+   "raw": {
+    "Adi": 10.45,
+    "Jhanvi": 13.35,
+    "Kevin": -4,
+    "Kunj": -5.5,
+    "Om": 8.85,
+    "Sanat": -24.1,
+    "Smit": 0.6,
+    "Vansh": 0.1
+   },
+   "stake": 10,
+   "id": "s1791951638401"
+  },
+  {
+   "buyins": {
+    "Adi": 1,
+    "Jhanvi": 1,
+    "Kevin": 2,
+    "Kunj": 1,
+    "Om": 2,
+    "Sanat": 2,
+    "Sanjavan": 2,
+    "Smit": 1
+   },
+   "cashouts": {
+    "Adi": 40,
+    "Jhanvi": 12.3,
+    "Kevin": 20,
+    "Kunj": 0,
+    "Om": 0,
+    "Sanat": 0,
+    "Sanjavan": 0,
+    "Smit": 47.45
+   },
+   "createdAt": "2026-10-15T03:47:55.400Z",
+   "date": "2026-10-15",
+   "mode": "losers-weighted",
+   "nets": {
+    "Adi": 30,
+    "Jhanvi": 2.3,
+    "Kevin": 0,
+    "Kunj": -9.96,
+    "Om": -19.93,
+    "Sanat": -19.93,
+    "Sanjavan": -19.93,
+    "Smit": 37.45
+   },
+   "note": "",
+   "raw": {
+    "Adi": 30,
+    "Jhanvi": 2.3,
+    "Kevin": 0,
+    "Kunj": -10,
+    "Om": -20,
+    "Sanat": -20,
+    "Sanjavan": -20,
+    "Smit": 37.45
+   },
+   "stake": 10,
+   "id": "s1792036075400"
+  },
+  {
+   "buyins": {
+    "Adi": 1,
+    "Jhanvi": 1,
+    "Kevin": 1,
+    "Kunj": 2,
+    "Sanat": 2,
+    "Smit": 1,
+    "Vansh": 4
+   },
+   "cashouts": {
+    "Adi": 15.55,
+    "Jhanvi": 19.05,
+    "Kevin": 0,
+    "Kunj": 20,
+    "Sanat": 29.55,
+    "Smit": 30.15,
+    "Vansh": 5.7
+   },
+   "createdAt": "2026-10-17T05:35:00.597Z",
+   "date": "2026-10-17",
+   "mode": "losers-safe",
+   "nets": {
+    "Adi": 5.55,
+    "Jhanvi": 9.05,
+    "Kevin": -10,
+    "Kunj": 0,
+    "Sanat": 9.55,
+    "Smit": 20.15,
+    "Vansh": -34.3
+   },
+   "note": "",
+   "raw": {
+    "Adi": 5.55,
+    "Jhanvi": 9.05,
+    "Kevin": -10,
+    "Kunj": 0,
+    "Sanat": 9.55,
+    "Smit": 20.15,
+    "Vansh": -34.3
+   },
+   "stake": 10,
+   "id": "s1792215300597"
+  },
+  {
+   "buyins": {
+    "Adi": 2,
+    "Jhanvi": 1,
+    "Kevin": 1,
+    "Kunj": 2,
+    "Om": 1,
+    "Preet": 2,
+    "Sanat": 1,
+    "Sanjavan": 2,
+    "Smit": 1
+   },
+   "cashouts": {
+    "Adi": 0,
+    "Jhanvi": 4.1,
+    "Kevin": 15,
+    "Kunj": 26,
+    "Om": 41.05,
+    "Preet": 32.25,
+    "Sanat": 0,
+    "Sanjavan": 0,
+    "Smit": 11.3
+   },
+   "createdAt": "2026-10-20T04:41:57.845Z",
+   "date": "2026-10-20",
+   "mode": "losers-weighted",
+   "nets": {
+    "Adi": -19.89,
+    "Jhanvi": -5.87,
+    "Kevin": 5,
+    "Kunj": 6,
+    "Om": 31.05,
+    "Preet": 12.25,
+    "Sanat": -9.95,
+    "Sanjavan": -19.89,
+    "Smit": 1.3
+   },
+   "note": "",
+   "raw": {
+    "Adi": -20,
+    "Jhanvi": -5.9,
+    "Kevin": 5,
+    "Kunj": 6,
+    "Om": 31.05,
+    "Preet": 12.25,
+    "Sanat": -10,
+    "Sanjavan": -20,
+    "Smit": 1.3
+   },
+   "stake": 10,
+   "id": "s1792471317845"
+  },
+  {
+   "buyins": {
+    "Adi": 2,
+    "Jhanvi": 1,
+    "Kevin": 2,
+    "Kunj": 1,
+    "Preet": 3,
+    "Sanat": 1,
+    "Sanjavan": 1,
+    "Smit": 1
+   },
+   "cashouts": {
+    "Adi": 13.6,
+    "Jhanvi": 0,
+    "Kevin": 0,
+    "Kunj": 10.6,
+    "Preet": 27.2,
+    "Sanat": 14.55,
+    "Sanjavan": 42,
+    "Smit": 12.05
+   },
+   "createdAt": "2026-10-22T04:52:13.491Z",
+   "date": "2026-10-22",
+   "mode": "losers-safe",
+   "nets": {
+    "Adi": -6.4,
+    "Jhanvi": -10,
+    "Kevin": -20,
+    "Kunj": 0.6,
+    "Preet": -2.8,
+    "Sanat": 4.55,
+    "Sanjavan": 32,
+    "Smit": 2.05
+   },
+   "note": "",
+   "raw": {
+    "Adi": -6.4,
+    "Jhanvi": -10,
+    "Kevin": -20,
+    "Kunj": 0.6,
+    "Preet": -2.8,
+    "Sanat": 4.55,
+    "Sanjavan": 32,
+    "Smit": 2.05
+   },
+   "stake": 10,
+   "id": "s1792644733491"
+  },
+  {
+   "buyins": {
+    "Adi": 2,
+    "Jhanvi": 2,
+    "Kunj": 2,
+    "Om": 1,
+    "Preet": 1,
+    "Sanat": 2,
+    "Smit": 3
+   },
+   "cashouts": {
+    "Adi": 30.05,
+    "Jhanvi": 0,
+    "Kunj": 9,
+    "Om": 10,
+    "Preet": 57.15,
+    "Sanat": 23.55,
+    "Smit": 0
+   },
+   "createdAt": "2026-10-23T05:35:59.517Z",
+   "date": "2026-10-23",
+   "mode": "losers-weighted",
+   "nets": {
+    "Adi": 10.05,
+    "Jhanvi": -19.92,
+    "Kunj": -10.95,
+    "Om": 0,
+    "Preet": 47.15,
+    "Sanat": 3.55,
+    "Smit": -29.88
+   },
+   "note": "",
+   "raw": {
+    "Adi": 10.05,
+    "Jhanvi": -20,
+    "Kunj": -11,
+    "Om": 0,
+    "Preet": 47.15,
+    "Sanat": 3.55,
+    "Smit": -30
+   },
+   "stake": 10,
+   "id": "s1792733759517"
+  },
+  {
+   "approxDate": false,
+   "buyins": {
+    "Adi": 2,
+    "Aditya Patel": 1,
+    "Kevin": 1,
+    "Kunj": 2,
+    "Om": 3,
+    "Preet": 1,
+    "Sanat": 2,
+    "Sanjavan": 1,
+    "Smit": 1
+   },
+   "cashouts": {
+    "Adi": 12.5,
+    "Aditya Patel": 3.6,
+    "Kevin": 25,
+    "Kunj": 16.25,
+    "Om": 17,
+    "Preet": 0,
+    "Sanat": 0,
+    "Sanjavan": 15.15,
+    "Smit": 50
+   },
+   "createdAt": "2026-10-27T04:38:22.755Z",
+   "date": "2026-10-26",
+   "kind": "game",
+   "mode": "losers-weighted",
+   "nets": {
+    "Adi": -7.44,
+    "Aditya Patel": -6.34,
+    "Kevin": 15,
+    "Kunj": -3.72,
+    "Om": -12.89,
+    "Preet": -9.92,
+    "Sanat": -19.84,
+    "Sanjavan": 5.15,
+    "Smit": 40
+   },
+   "note": "",
+   "raw": {
+    "Adi": -7.5,
+    "Aditya Patel": -6.4,
+    "Kevin": 15,
+    "Kunj": -3.75,
+    "Om": -13,
+    "Preet": -10,
+    "Sanat": -20,
+    "Sanjavan": 5.15,
+    "Smit": 40
+   },
+   "stake": 10,
+   "updatedAt": "2026-10-27T04:38:22.755Z",
+   "id": "s1793075902755"
+  },
+  {
+   "approxDate": false,
+   "buyins": {
+    "Adi": 1,
+    "Jhanvi": 1,
+    "Kevin": 1,
+    "Kunj": 2,
+    "Om": 2,
+    "Preet": 1,
+    "Sanat": 1,
+    "Sanjavan": 1,
+    "Smit": 2
+   },
+   "cashouts": {
+    "Adi": 12.1,
+    "Jhanvi": 8.45,
+    "Kevin": 15,
+    "Kunj": 20,
+    "Om": 0,
+    "Preet": 14.2,
+    "Sanat": 15.45,
+    "Smit": 24.65
+   },
+   "createdAt": "2026-10-28T04:43:31.514Z",
+   "date": "2026-10-27",
+   "kind": "game",
+   "mode": "equal",
+   "nets": {
+    "Adi": 2.12,
+    "Jhanvi": -1.53,
+    "Kevin": 5.02,
+    "Kunj": 0.02,
+    "Om": -19.98,
+    "Preet": 4.21,
+    "Sanat": 5.47,
+    "Smit": 4.67
+   },
+   "note": "",
+   "raw": {
+    "Adi": 2.1,
+    "Jhanvi": -1.55,
+    "Kevin": 5,
+    "Kunj": 0,
+    "Om": -20,
+    "Preet": 4.2,
+    "Sanat": 5.45,
+    "Smit": 4.65
+   },
+   "stake": 10,
+   "updatedAt": "2026-10-28T04:43:31.514Z",
+   "id": "s1793162611514"
+  },
+  {
+   "approxDate": false,
+   "buyins": {
+    "Adi": 2,
+    "Kevin": 1,
+    "Kunj": 1,
+    "Om": 2,
+    "Preet": 2,
+    "Sanat": 2,
+    "Sanjavan": 2,
+    "Smit": 1
+   },
+   "cashouts": {
+    "Adi": 20.3,
+    "Kevin": 14.25,
+    "Kunj": 1.7,
+    "Om": 25.35,
+    "Preet": 10,
+    "Sanat": 0,
+    "Sanjavan": 40.8,
+    "Smit": 17.6
+   },
+   "createdAt": "2026-10-30T03:11:54.122Z",
+   "date": "2026-10-29",
+   "kind": "game",
+   "mode": "losers-safe",
+   "nets": {
+    "Adi": 0.3,
+    "Kevin": 4.25,
+    "Kunj": -8.3,
+    "Om": 5.35,
+    "Preet": -10,
+    "Sanat": -20,
+    "Sanjavan": 20.8,
+    "Smit": 7.6
+   },
+   "note": "",
+   "raw": {
+    "Adi": 0.3,
+    "Kevin": 4.25,
+    "Kunj": -8.3,
+    "Om": 5.35,
+    "Preet": -10,
+    "Sanat": -20,
+    "Sanjavan": 20.8,
+    "Smit": 7.6
+   },
+   "stake": 10,
+   "updatedAt": "2026-10-30T03:11:54.122Z",
+   "id": "s1793329914122"
+  },
+  {
+   "approxDate": false,
+   "buyins": {
+    "Adi": 1,
+    "Jhanvi": 2,
+    "Kunj": 1,
+    "Om": 3,
+    "Preet": 4,
+    "Sanat": 2,
+    "Smit": 1,
+    "Vansh": 4
+   },
+   "cashouts": {
+    "Adi": 17.25,
+    "Jhanvi": 6.8,
+    "Kunj": 30.45,
+    "Om": 0,
+    "Preet": 13.75,
+    "Sanat": 22.6,
+    "Smit": 53.95,
+    "Vansh": 35.2
+   },
+   "createdAt": "2026-11-02T01:53:09.413Z",
+   "date": "2026-11-01",
+   "kind": "game",
+   "mode": "manual",
+   "nets": {
+    "Adi": 7.25,
+    "Jhanvi": -13.2,
+    "Kunj": 20.45,
+    "Om": -30,
+    "Preet": -26.25,
+    "Sanat": 2.6,
+    "Smit": 43.95,
+    "Vansh": -4.8
+   },
+   "note": "",
+   "raw": {
+    "Adi": 7.25,
+    "Jhanvi": -13.2,
+    "Kunj": 20.45,
+    "Om": -30,
+    "Preet": -26.25,
+    "Sanat": 2.6,
+    "Smit": 43.95,
+    "Vansh": -4.8
+   },
+   "stake": 10,
+   "updatedAt": "2026-11-02T01:53:09.413Z",
+   "id": "s1793584389413"
+  },
+  {
+   "approxDate": false,
+   "buyins": {
+    "Adi": 1,
+    "Kevin": 1,
+    "Kunj": 1,
+    "Preet": 3,
+    "Sanat": 3,
+    "Sanjavan": 1,
+    "Smit": 1
+   },
+   "cashouts": {
+    "Adi": 20.8,
+    "Kevin": 22.3,
+    "Kunj": 26.5,
+    "Preet": 8.9,
+    "Sanat": 10.85,
+    "Sanjavan": 2.75,
+    "Smit": 17.9
+   },
+   "createdAt": "2026-11-03T03:49:03.347Z",
+   "date": "2026-11-02",
+   "kind": "game",
+   "mode": "losers-safe",
+   "nets": {
+    "Adi": 10.8,
+    "Kevin": 12.3,
+    "Kunj": 16.5,
+    "Preet": -21.1,
+    "Sanat": -19.15,
+    "Sanjavan": -7.25,
+    "Smit": 7.9
+   },
+   "note": "",
+   "raw": {
+    "Adi": 10.8,
+    "Kevin": 12.3,
+    "Kunj": 16.5,
+    "Preet": -21.1,
+    "Sanat": -19.15,
+    "Sanjavan": -7.25,
+    "Smit": 7.9
+   },
+   "stake": 10,
+   "updatedAt": "2026-11-03T03:49:03.347Z",
+   "id": "s1793677743347"
+  },
+  {
+   "approxDate": false,
+   "buyins": {
+    "Adi": 1,
+    "Jhanvi": 1,
+    "Kevin": 1,
+    "Kunj": 3,
+    "Om": 2,
+    "Preet": 2,
+    "Sanat": 1,
+    "Smit": 1,
+    "Vansh": 2
+   },
+   "cashouts": {
+    "Adi": 7.75,
+    "Jhanvi": 7.5,
+    "Kevin": 20.5,
+    "Kunj": 4.5,
+    "Om": 14,
+    "Preet": 0,
+    "Sanat": 34.65,
+    "Smit": 29.7,
+    "Vansh": 20.9
+   },
+   "createdAt": "2026-11-04T05:03:48.951Z",
+   "date": "2026-11-03",
+   "kind": "game",
+   "mode": "losers-weighted",
+   "nets": {
+    "Adi": -2.23,
+    "Jhanvi": -2.48,
+    "Kevin": 10.5,
+    "Kunj": -25.27,
+    "Om": -5.95,
+    "Preet": -19.82,
+    "Sanat": 24.65,
+    "Smit": 19.7,
+    "Vansh": 0.9
+   },
+   "note": "",
+   "raw": {
+    "Adi": -2.25,
+    "Jhanvi": -2.5,
+    "Kevin": 10.5,
+    "Kunj": -25.5,
+    "Om": -6,
+    "Preet": -20,
+    "Sanat": 24.65,
+    "Smit": 19.7,
+    "Vansh": 0.9
+   },
+   "stake": 10,
+   "updatedAt": "2026-11-04T05:03:48.951Z",
+   "id": "s1793768628951"
+  },
+  {
+   "approxDate": false,
+   "buyins": {
+    "Adi": 2,
+    "Jhanvi": 2,
+    "Kevin": 1,
+    "Kunj": 1,
+    "Om": 2,
+    "Sanat": 1,
+    "Smit": 1
+   },
+   "cashouts": {
+    "Adi": 0,
+    "Jhanvi": 34.7,
+    "Kevin": 7,
+    "Kunj": 18.5,
+    "Om": 0,
+    "Sanat": 11.3,
+    "Smit": 28.5
+   },
+   "createdAt": "2026-11-05T04:23:06.093Z",
+   "date": "2026-11-04",
+   "kind": "game",
+   "mode": "losers-safe",
+   "nets": {
+    "Adi": -20,
+    "Jhanvi": 14.7,
+    "Kevin": -3,
+    "Kunj": 8.5,
+    "Om": -20,
+    "Sanat": 1.3,
+    "Smit": 18.5
+   },
+   "note": "",
+   "raw": {
+    "Adi": -20,
+    "Jhanvi": 14.7,
+    "Kevin": -3,
+    "Kunj": 8.5,
+    "Om": -20,
+    "Sanat": 1.3,
+    "Smit": 18.5
+   },
+   "stake": 10,
+   "updatedAt": "2026-11-05T04:23:06.093Z",
+   "id": "s1793852586093"
+  },
+  {
+   "approxDate": false,
+   "buyins": {
+    "Adi": 2,
+    "Jhanvi": 2,
+    "Kevin": 2,
+    "Kunj": 1,
+    "Sanat": 1,
+    "Smit": 1,
+    "Vansh": 4
+   },
+   "cashouts": {
+    "Adi": 0,
+    "Jhanvi": 7.3,
+    "Kevin": 5,
+    "Kunj": 25.5,
+    "Sanat": 14.25,
+    "Smit": 48.35,
+    "Vansh": 28.6
+   },
+   "createdAt": "2026-11-06T04:50:14.069Z",
+   "date": "2026-11-05",
+   "kind": "game",
+   "mode": "losers-weighted",
+   "nets": {
+    "Adi": -19.66,
+    "Jhanvi": -12.49,
+    "Kevin": -14.75,
+    "Kunj": 15.5,
+    "Sanat": 4.25,
+    "Smit": 38.35,
+    "Vansh": -11.2
+   },
+   "note": "",
+   "raw": {
+    "Adi": -20,
+    "Jhanvi": -12.7,
+    "Kevin": -15,
+    "Kunj": 15.5,
+    "Sanat": 4.25,
+    "Smit": 38.35,
+    "Vansh": -11.4
+   },
+   "stake": 10,
+   "updatedAt": "2026-11-06T04:50:14.069Z",
+   "id": "s1793940614069"
+  },
+  {
+   "approxDate": false,
+   "buyins": {
+    "Adi": 1,
+    "Jhanvi": 2,
+    "Kevin": 1,
+    "Kunj": 2,
+    "Preet": 3,
+    "Rakshit": 2,
+    "Sanat": 2,
+    "Sanjavan": 2,
+    "Smit": 2,
+    "Vansh": 2
+   },
+   "cashouts": {
+    "Adi": 29,
+    "Jhanvi": 0,
+    "Kevin": 30.65,
+    "Kunj": 0,
+    "Preet": 0,
+    "Rakshit": 10,
+    "Sanat": 34,
+    "Sanjavan": 12.9,
+    "Smit": 40.4,
+    "Vansh": 33.05
+   },
+   "createdAt": "2026-11-14T03:57:47.028Z",
+   "date": "2026-11-13",
+   "kind": "game",
+   "mode": "losers-safe",
+   "nets": {
+    "Adi": 19,
+    "Jhanvi": -20,
+    "Kevin": 20.65,
+    "Kunj": -20,
+    "Preet": -30,
+    "Rakshit": -10,
+    "Sanat": 14,
+    "Sanjavan": -7.1,
+    "Smit": 20.4,
+    "Vansh": 13.05
+   },
+   "note": "",
+   "raw": {
+    "Adi": 19,
+    "Jhanvi": -20,
+    "Kevin": 20.65,
+    "Kunj": -20,
+    "Preet": -30,
+    "Rakshit": -10,
+    "Sanat": 14,
+    "Sanjavan": -7.1,
+    "Smit": 20.4,
+    "Vansh": 13.05
+   },
+   "stake": 10,
+   "updatedAt": "2026-11-14T04:01:27.375Z",
+   "id": "s1794628667028"
+  },
+  {
+   "approxDate": false,
+   "createdAt": "2026-11-14T03:54:00Z",
+   "date": "2026-11-13",
+   "entry": "direct",
+   "kind": "game",
+   "mode": "none",
+   "nets": {
+    "Kevin": 15.85,
+    "Kunj": -6.5,
+    "Om": 39.65,
+    "Preet": -30,
+    "Rakshit": -6.7,
+    "Sanat": -20,
+    "Smit": -8,
+    "Vansh": 15.7
+   },
+   "note": "Logged from WhatsApp P&L",
+   "raw": {
+    "Kevin": 15.85,
+    "Kunj": -6.5,
+    "Om": 39.65,
+    "Preet": -30,
+    "Rakshit": -6.7,
+    "Sanat": -20,
+    "Smit": -8,
+    "Vansh": 15.7
+   },
+   "stake": 10,
+   "id": "s1794630840000"
+  }
+ ]
+}

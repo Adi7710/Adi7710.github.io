@@ -1,0 +1,796 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Poker home game P&amp;L ledger">
+<title>Felt Ledger</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a one-column scoreboard — summary first (standings + settle-up + adjustments), then the live table wizard, then history, records and charts. Scoreboard digits in mono, headings in a condensed marquee face. */
+:root{
+  --bg:#f3f5f1; --card:#ffffff; --fg:#17201b; --muted:#5f6b63; --line:#d9ded8;
+  --felt:#1f6b45; --felt-soft:#dcefe3; --chip-red:#c8373b; --chip-blue:#2f5fb3; --chip-black:#1b1f24; --gold:#b8891c;
+  --win:#1f7a46; --loss:#c23a3a; --win-soft:#def3e5; --loss-soft:#fbe2e2;
+  --display:"Bebas Neue","Oswald","Arial Narrow",sans-serif;
+  --body:"Source Sans 3","Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"JetBrains Mono","SFMono-Regular",Consolas,monospace;
+  --radius:10px; --shadow:0 1px 2px rgba(20,30,24,.08),0 6px 20px rgba(20,30,24,.06);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0e1612; --card:#172119; --fg:#eaf0ea; --muted:#9aaaa0; --line:#2a3a2f;
+  --felt:#2f8f5c; --felt-soft:#1b3326; --chip-red:#e05256; --chip-blue:#5b8be0; --chip-black:#e9edf1; --gold:#e2b04a;
+  --win:#4fc47f; --loss:#f06a6a; --win-soft:#17352a; --loss-soft:#3d1f1f;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0e1612; --card:#172119; --fg:#eaf0ea; --muted:#9aaaa0; --line:#2a3a2f;
+  --felt:#2f8f5c; --felt-soft:#1b3326; --chip-red:#e05256; --chip-blue:#5b8be0; --chip-black:#e9edf1; --gold:#e2b04a;
+  --win:#4fc47f; --loss:#f06a6a; --win-soft:#17352a; --loss-soft:#3d1f1f;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.45}
+.wrap{max-width:980px;margin:0 auto;padding-inline:16px;padding-block:0 48px}
+h1,h2,h3{font-family:var(--display);font-weight:400;letter-spacing:.02em;text-wrap:balance;margin:0}
+h1{font-size:2.4rem;line-height:1}
+h2{font-size:1.7rem;line-height:1.05}
+h3{font-size:1.25rem;color:var(--muted)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.pos{color:var(--win)} .neg{color:var(--loss)} .zero{color:var(--muted)}
+.eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.muted{color:var(--muted)}
+button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--felt);color:#fff;
+  margin-inline:-16px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  background-image:radial-gradient(ellipse at 20% 0%,rgba(255,255,255,.12),transparent 55%)}
+.top h1{color:#fff}
+.top .blinds{font-family:var(--mono);font-size:.8rem;opacity:.9;text-align:right;line-height:1.3}
+.top .blinds b{font-weight:600}
+
+.tabs{display:flex;gap:6px;margin-block:18px 14px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:7px 14px;font-weight:600;font-size:.92rem}
+.tab[aria-selected="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+.stack{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+.stack>*{min-width:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:8px;padding:10px 16px;font-weight:600;transition:transform .12s,background .15s}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--felt);color:#fff;border-color:var(--felt)}
+.btn.danger{color:var(--loss);border-color:var(--loss)}
+.btn.ghost{background:transparent}
+.btn.sm{padding:6px 10px;font-size:.88rem}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:9px 8px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+td.r,th.r{text-align:right}
+tr.prow-click{cursor:pointer}
+tr.prow-click:hover td{background:var(--felt-soft)}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;position:relative;min-width:60px}
+.bar i{position:absolute;top:0;bottom:0;border-radius:3px;animation:grow .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.rank{font-family:var(--display);font-size:1.3rem;color:var(--muted);width:30px}
+.rank.top{color:var(--gold)}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.tile{background:var(--felt-soft);border-radius:8px;padding:12px 14px;min-width:0}
+.tile .v{font-family:var(--display);font-size:1.9rem;line-height:1;overflow-wrap:anywhere}
+.tile .l{font-size:.75rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:4px}
+.tile .s{font-size:.85rem;margin-top:2px}
+
+/* profile card */
+.profile{border-top:1px solid var(--line);background:var(--bg);padding:14px 12px;display:grid;gap:12px}
+.profile .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0}
+.stat .v{font-family:var(--mono);font-weight:600;font-size:1.05rem}
+.stat .l{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.spark{width:100%;height:70px;display:block}
+
+/* wizard */
+.steps{display:flex;gap:4px;margin-bottom:14px}
+.steps span{flex:1;height:4px;border-radius:2px;background:var(--line)}
+.steps span.on{background:var(--felt)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:8px 14px;font-weight:600;transition:all .15s;display:flex;align-items:center;gap:8px}
+.chip .dot{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.chip[aria-pressed="true"]{border-color:var(--felt);background:var(--felt-soft)}
+.chip[aria-pressed="true"] .dot{background:var(--felt)}
+.stake{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stakebtn{border:2px solid var(--line);background:var(--card);color:var(--fg);border-radius:12px;padding:18px;text-align:left;transition:all .15s}
+.stakebtn .big{font-family:var(--display);font-size:2.4rem;line-height:1}
+.stakebtn[aria-pressed="true"]{border-color:var(--felt);background:var(--felt-soft)}
+.prow{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.prow:last-child{border-bottom:0}
+.prow .nm{font-weight:600}
+.prow .sub{font-size:.82rem;color:var(--muted)}
+.counter{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.counter button{border:0;background:var(--card);color:var(--fg);width:46px;height:42px;font-size:1.3rem}
+.counter button:hover{background:var(--felt-soft)}
+.counter .c{min-width:44px;text-align:center;font-family:var(--mono);font-weight:600}
+input[type="number"],input[type="text"],input[type="date"],select{font:inherit;font-family:var(--mono);background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:110px}
+input[type="text"],select{font-family:var(--body);width:auto}
+input[type="date"]{width:auto}
+.total{display:flex;justify-content:space-between;align-items:center;padding-top:12px;margin-top:6px;border-top:2px solid var(--line)}
+.total .v{font-family:var(--display);font-size:2rem;line-height:1}
+.checkbox{display:flex;align-items:center;gap:8px;font-size:.92rem}
+.switch{display:flex;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px}
+.switch button{border:0;background:transparent;color:var(--muted);border-radius:999px;padding:6px 12px;font-weight:600;font-size:.88rem}
+.switch button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+
+.verdict{border-radius:10px;padding:14px 16px;display:flex;gap:14px;align-items:center}
+.verdict.ok{background:var(--win-soft)} .verdict.off{background:var(--loss-soft)}
+.verdict .v{font-family:var(--display);font-size:2.2rem;line-height:1}
+.modes{display:grid;gap:8px}
+.mode{border:2px solid var(--line);background:var(--card);color:var(--fg);border-radius:10px;padding:12px 14px;text-align:left}
+.mode b{display:block}
+.mode small{color:var(--muted)}
+.mode[aria-pressed="true"]{border-color:var(--felt);background:var(--felt-soft)}
+
+pre.msg{font-family:var(--body);white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px;margin:0;font-size:.95rem;user-select:all}
+
+.sess{display:grid;grid-template-columns:1fr auto;gap:8px;padding:10px 0;border-bottom:1px solid var(--line);align-items:center}
+.sess:last-child{border-bottom:0}
+.sess .who{font-size:.85rem;color:var(--muted)}
+.tag{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--felt-soft);color:var(--felt);font-weight:700}
+.tag.adj{background:var(--loss-soft);color:var(--loss)}
+.chart{position:relative;width:100%;max-width:100%;height:320px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:999px;opacity:0;transition:all .25s;pointer-events:none;z-index:9}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.empty{color:var(--muted);padding:20px;text-align:center}
+.fade{animation:fade .35s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.pay{display:grid;grid-template-columns:1fr auto 1fr auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.pay:last-child{border-bottom:0}
+.pay .arrow{color:var(--muted)}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;align-items:end}
+.form label{display:grid;gap:4px;font-size:.8rem;color:var(--muted)}
+.form select,.form input{width:100%}
+details summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details summary::after{content:"+";font-family:var(--mono);color:var(--muted)}
+details[open] summary::after{content:"−"}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:520px){#standings th:nth-child(4),#standings td:nth-child(4){display:none}td,th{padding-inline:6px}.stake{grid-template-columns:1fr}.top h1{font-size:1.9rem}.chart{height:260px}.pay{grid-template-columns:1fr auto 1fr;}.pay .amt{grid-column:1/-1;text-align:right}}
+body.readonly [data-write]{display:none!important}
+.foot{margin-top:24px;font-size:.8rem;color:var(--muted);text-align:center}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Felt Ledger</h1>
+      <div style="font-size:.82rem;opacity:.85">Home game P&amp;L tracker</div>
+    </div>
+    <div class="blinds">Blinds <b>$0.05 / $0.10</b><br>Buy-in <b>$5.50</b> or <b>$10</b></div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-home" aria-selected="true" data-view="home">Standings</button>
+    <button data-write class="tab" role="tab" id="tab-game" aria-selected="false" data-view="game">New game</button>
+    <button class="tab" role="tab" id="tab-history" aria-selected="false" data-view="history">History &amp; charts</button>
+  </nav>
+
+  <!-- HOME -->
+  <section id="view-home" class="stack">
+    <div class="tiles" id="tiles"></div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px">
+        <h2>Leaderboard</h2>
+        <div class="row">
+          <button class="btn sm" id="btn-copy-standings">Copy WhatsApp message</button>
+          <button data-write class="btn sm primary" id="btn-start-home">Start new game</button>
+        </div>
+      </div>
+      <p class="muted" style="margin:0 0 8px;font-size:.85rem">Tap a player for their profile. <span id="asof"></span></p>
+      <div style="overflow-x:auto"><table id="standings"><thead><tr><th></th><th>Player</th><th class="r">Net</th><th style="width:30%"></th><th class="r">Played</th><th class="r">Form</th></tr></thead><tbody></tbody></table></div>
+      <p class="muted" id="opening-note" style="font-size:.85rem;margin:12px 0 0"></p>
+    </div>
+
+    <div class="card" data-write>
+      <details id="adj-details">
+        <summary><h2>Record an adjustment</h2></summary>
+        <p class="muted" style="margin:8px 0 12px;font-size:.9rem">For settlements outside a game: one player takes over another's balance, a side payment, or a correction. The credited player's number goes up by the amount; the debited player's goes down.</p>
+        <div class="form">
+          <label>Credit (goes up)<select id="adj-to"></select></label>
+          <label>Debit (goes down)<select id="adj-from"></select></label>
+          <label>Amount<input type="number" step="0.01" min="0" inputmode="decimal" id="adj-amt" placeholder="0.00"></label>
+          <label>Date<input type="date" id="adj-date"></label>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <input type="text" id="adj-note" placeholder="Note, e.g. Kunj settled Kevin in full" style="flex:1;min-width:200px">
+          <button class="btn sm ghost" id="adj-zero" title="Set the amount so the credited player's balance becomes zero">Zero out credited player</button>
+          <button class="btn primary" id="adj-save">Record adjustment</button>
+        </div>
+        <p class="muted" id="adj-preview" style="margin:10px 0 0;font-size:.9rem"></p>
+      </details>
+    </div>
+
+    <div class="card">
+      <details id="settle-details">
+        <summary><h2>Settle up: who pays whom</h2></summary>
+        <p class="muted" style="margin:8px 0 12px;font-size:.9rem">Fewest payments that bring everyone to zero from the current ledger. Based on the current ledger.</p>
+        <div id="settle"></div>
+        <div class="row" style="margin-top:12px;justify-content:space-between">
+          <button class="btn sm" id="settle-copy">Copy payment list</button>
+          <button data-write class="btn sm danger" id="settle-mark">Mark all as settled (zeroes the ledger)</button>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-write>
+      <h2 style="margin-bottom:8px">Players</h2>
+      <div class="row">
+        <input type="text" id="new-player" placeholder="Add a player" aria-label="New player name">
+        <button class="btn sm" id="btn-add-player">Add</button>
+      </div>
+      <div class="chips" id="player-list" style="margin-top:10px"></div>
+    </div>
+  </section>
+
+  <!-- GAME WIZARD -->
+  <section id="view-game" class="stack" hidden>
+    <div class="card">
+      <div class="steps"><span id="s1"></span><span id="s2"></span><span id="s3"></span><span id="s4"></span><span id="s5"></span></div>
+      <div id="wiz"></div>
+    </div>
+  </section>
+
+  <!-- HISTORY -->
+  <section id="view-history" class="stack" hidden>
+    <div class="card">
+      <h2 style="margin-bottom:10px">Records</h2>
+      <div class="tiles" id="records"></div>
+    </div>
+    <div class="card">
+      <h2 style="margin-bottom:6px">Cumulative P&amp;L</h2>
+      <p class="muted" style="margin:0 0 10px;font-size:.9rem">Running total per player, session by session. Dates marked ≈ were logged before the tracker existed and are approximate.</p>
+      <div class="chart"><canvas id="chart-line"></canvas></div>
+    </div>
+    <div class="card">
+      <h2 style="margin-bottom:10px">Current standings</h2>
+      <div class="chart"><canvas id="chart-bar"></canvas></div>
+    </div>
+    <div class="card">
+      <h2 style="margin-bottom:10px">Sessions</h2>
+      <div id="sessions"></div>
+    </div>
+  </section>
+</div>
+<p class="foot">Felt Ledger · read-only view of the group ledger · blinds $0.05 / $0.10</p>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s);
+const fmt=n=>(n>0?"+":n<0?"-":"")+Math.abs(n).toFixed(2);
+const cls=n=>Math.abs(n)<0.005?"zero":n>0?"pos":"neg";
+const r2=n=>Math.round((n+Number.EPSILON)*100)/100;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const slug=s=>s.trim().toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
+const SB=0.05,BB=0.10;
+// Game night date: before 6 AM counts as the previous day.
+function gameDate(){const d=new Date();if(d.getHours()<6)d.setDate(d.getDate()-1);const p=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`}
+
+// ---------- state ----------
+let db=null;
+let players=[];
+let opening={balances:{},asOf:"",note:""};
+let sessions=[];
+let settings={minPlayers:2};
+let view="home";
+let charts={};
+let openProfile=null;
+
+const DRAFT_KEY="felt-ledger-draft";
+function loadDraft(){try{const j=localStorage.getItem(DRAFT_KEY);return j?JSON.parse(j):null}catch(e){return null}}
+function saveDraft(){try{localStorage.setItem(DRAFT_KEY,JSON.stringify(wiz))}catch(e){}}
+function clearDraft(){try{localStorage.removeItem(DRAFT_KEY)}catch(e){}}
+
+let wiz=loadDraft()||freshWiz();
+if(!("direct" in wiz)) wiz=freshWiz();
+function freshWiz(){return{step:1,direct:false,selected:[],stake:null,buyins:{},cashouts:{},directNets:{},mode:"losers-safe",manual:null,note:"",date:gameDate(),saved:false,resultId:null,editId:null,editCreatedAt:null}}
+
+// ---------- derived ----------
+function orderedSessions(){return [...sessions].sort((a,b)=>(a.date||"").localeCompare(b.date||"")||(a.createdAt||"").localeCompare(b.createdAt||""))}
+function standings(){
+  const bal={};
+  for(const p of players) bal[p.name]=0;
+  for(const [k,v] of Object.entries(opening.balances||{})) bal[k]=(bal[k]||0)+v;
+  const count={};
+  for(const s of sessions){ if(s.kind==="adjustment") {for(const k of Object.keys(s.nets||{})) bal[k]=(bal[k]||0)+s.nets[k]; continue;}
+    for(const [k,v] of Object.entries(s.nets||{})){bal[k]=(bal[k]||0)+v;count[k]=(count[k]||0)+1}}
+  return Object.entries(bal).map(([name,net])=>({name,net:r2(net),sessions:count[name]||0})).sort((a,b)=>b.net-a.net);
+}
+function playerStats(name){
+  const games=orderedSessions().filter(s=>s.kind!=="adjustment"&&s.nets&&name in s.nets);
+  const res=games.map(s=>s.nets[name]);
+  const n=res.length, wins=res.filter(v=>v>0).length, losses=res.filter(v=>v<0).length;
+  const best=n?Math.max(...res):0, worst=n?Math.min(...res):0;
+  const avg=n?r2(res.reduce((a,b)=>a+b,0)/n):0;
+  const mean=avg; const sd=n>1?Math.sqrt(res.reduce((a,v)=>a+(v-mean)**2,0)/(n-1)):0;
+  // current streak
+  let streak=0, dir=0;
+  for(let i=res.length-1;i>=0;i--){const d=res[i]>0?1:res[i]<0?-1:0; if(!d) break; if(!dir){dir=d;streak=1}else if(d===dir)streak++;else break}
+  // longest win / loss streaks
+  let lw=0,ll=0,cw=0,cl=0; for(const v of res){if(v>0){cw++;cl=0}else if(v<0){cl++;cw=0}else{cw=0;cl=0} lw=Math.max(lw,cw);ll=Math.max(ll,cl)}
+  // cumulative series incl. opening + adjustments
+  let v=r2(opening.balances?.[name]||0); const series=[v];
+  for(const s of orderedSessions()){ if(s.nets&&name in s.nets){v=r2(v+s.nets[name]);series.push(v)} }
+  const bestDate=n?games[res.indexOf(best)].date:"", worstDate=n?games[res.indexOf(worst)].date:"";
+  return {n,wins,losses,best,worst,avg,sd:r2(sd),streak,dir,lw,ll,series,res,bestDate,worstDate,last:games.length?games[games.length-1].date:""};
+}
+function whatsapp(list){
+  return "💸 *Final P&L — Adjusted*\n\n"+list.map(p=>`${p.name}: ${fmt(p.net)}`).join("\n")+"\n\nPlease settle accordingly 🙏";
+}
+function sessionMessage(rec, ledger){
+  const lines=Object.entries(rec.nets).sort((a,b)=>b[1]-a[1]).map(([n,v])=>`${n}: ${fmt(v)}`).join("\n");
+  const head=rec.kind==="adjustment"?`🔧 *Adjustment · ${rec.date}*`:`🃏 *Session ${rec.date} · $${rec.stake} game*`;
+  return `${head}\n\n${lines}${rec.note?"\n_"+rec.note+"_":""}\n\n`+whatsapp(ledger);
+}
+
+// ---------- settlement math ----------
+function balance(nets,mode){
+  const out={...nets};
+  const names=Object.keys(out);
+  const sum=r2(names.reduce((a,n)=>a+out[n],0));
+  if(Math.abs(sum)<0.005||mode==="manual") return out;
+  let group;
+  if(mode==="losers-safe") group=names.filter(n=>out[n]>0);
+  else if(mode==="losers-weighted") group=names.filter(n=>out[n]<0);
+  else group=names.slice();
+  if(!group.length) group=names.slice();
+  const weightOf=n=>mode==="equal"?1:Math.abs(out[n]);
+  const W=group.reduce((a,n)=>a+weightOf(n),0)||group.length;
+  let applied=0;
+  group.forEach((n,i)=>{
+    const share=i===group.length-1?r2(-sum-applied):r2(-sum*weightOf(n)/W);
+    out[n]=r2(out[n]+share); applied=r2(applied+share);
+  });
+  return out;
+}
+function rawNets(){
+  const nets={};
+  for(const n of wiz.selected){
+    if(wiz.direct) nets[n]=r2(Number(wiz.directNets[n]||0));
+    else { const b=(wiz.buyins[n]||0)*wiz.stake, c=Number(wiz.cashouts[n]||0); nets[n]=r2(c-b); }
+  }
+  return nets;
+}
+function finalNets(){
+  const raw=rawNets();
+  if(wiz.mode==="manual"&&wiz.manual) return {...wiz.manual};
+  return balance(raw,wiz.mode);
+}
+// Minimum cash flow: greedy largest-creditor vs largest-debtor.
+function settlePlan(list){
+  const cr=list.filter(p=>p.net>0.004).map(p=>({n:p.name,v:p.net})).sort((a,b)=>b.v-a.v);
+  const de=list.filter(p=>p.net<-0.004).map(p=>({n:p.name,v:-p.net})).sort((a,b)=>b.v-a.v);
+  const pays=[]; let i=0,j=0;
+  while(i<cr.length&&j<de.length){
+    const amt=r2(Math.min(cr[i].v,de[j].v));
+    if(amt>0.004) pays.push({from:de[j].n,to:cr[i].n,amt});
+    cr[i].v=r2(cr[i].v-amt); de[j].v=r2(de[j].v-amt);
+    if(cr[i].v<0.005)i++; if(de[j].v<0.005)j++;
+  }
+  return pays;
+}
+
+// ---------- rendering ----------
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("show"),1800)}
+
+function setView(v){
+  view=v;
+  for(const t of document.querySelectorAll(".tab")) t.setAttribute("aria-selected",String(t.dataset.view===v));
+  $("#view-home").hidden=v!=="home"; $("#view-game").hidden=v!=="game"; $("#view-history").hidden=v!=="history";
+  if(v==="home") renderHome(); if(v==="game") renderWiz(); if(v==="history") renderHistory();
+  window.scrollTo({top:0});
+}
+
+function sparkSVG(series){
+  if(series.length<2) return "";
+  const W=300,H=70,P=4; const min=Math.min(0,...series), max=Math.max(0,...series); const rng=(max-min)||1;
+  const x=i=>P+i*(W-2*P)/(series.length-1), y=v=>H-P-(v-min)*(H-2*P)/rng;
+  const pts=series.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+  const last=series[series.length-1];
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><line x1="${P}" x2="${W-P}" y1="${y(0).toFixed(1)}" y2="${y(0).toFixed(1)}" stroke="var(--line)" stroke-width="1"/><polyline points="${pts}" fill="none" stroke="${last>=0?"var(--win)":"var(--loss)"}" stroke-width="2" stroke-linejoin="round"/><circle cx="${x(series.length-1).toFixed(1)}" cy="${y(last).toFixed(1)}" r="3" fill="${last>=0?"var(--win)":"var(--loss)"}"/></svg>`;
+}
+function formDots(res){ return res.slice(-5).map(v=>`<span style="color:${v>0?"var(--win)":v<0?"var(--loss)":"var(--muted)"}">${v>0?"●":v<0?"●":"○"}</span>`).join("") }
+
+function renderHome(){
+  const list=standings();
+  const tb=$("#standings tbody"); tb.innerHTML="";
+  const max=Math.max(1,...list.map(p=>Math.abs(p.net)));
+  if(!list.length){tb.innerHTML='<tr><td colspan="6" class="empty">No players yet. Add players below, then start a game.</td></tr>'}
+  list.forEach((p,i)=>{
+    const st=playerStats(p.name);
+    const tr=document.createElement("tr"); tr.className="fade prow-click"; tr.style.animationDelay=(i*20)+"ms";
+    const w=Math.abs(p.net)/max*50;
+    const left=p.net<0?`left:${50-w}%;width:${w}%;background:var(--loss)`:`left:50%;width:${w}%;background:var(--win)`;
+    tr.innerHTML=`<td class="rank ${i===0&&p.net>0?"top":""}">${i+1}</td><td><b>${esc(p.name)}</b></td><td class="r num ${cls(p.net)}">${fmt(p.net)}</td><td><div class="bar"><i style="${left};transform-origin:${p.net<0?"right":"left"}"></i></div></td><td class="r num muted">${p.sessions}</td><td class="r" style="letter-spacing:2px">${formDots(st.res)}</td>`;
+    tr.onclick=()=>{openProfile=openProfile===p.name?null:p.name;renderHome()};
+    tb.appendChild(tr);
+    if(openProfile===p.name){
+      const pr=document.createElement("tr"); const td=document.createElement("td"); td.colSpan=6; td.style.padding="0";
+      const wr=st.n?Math.round(100*st.wins/st.n):0;
+      const streakTxt=st.streak?`${st.streak} ${st.dir>0?"win":"loss"}${st.streak>1?"s":""} in a row`:"—";
+      td.innerHTML=`<div class="profile fade">
+        <div class="row" style="justify-content:space-between"><div><div class="eyebrow">Profile</div><h3 style="color:var(--fg)">${esc(p.name)}</h3></div><div class="num ${cls(p.net)}" style="font-family:var(--display);font-size:2rem">${fmt(p.net)}</div></div>
+        ${sparkSVG(st.series)}
+        <div class="grid">
+          <div class="stat"><div class="v">${st.n}</div><div class="l">Sessions</div></div>
+          <div class="stat"><div class="v">${wr}%</div><div class="l">Win rate (${st.wins}–${st.losses})</div></div>
+          <div class="stat"><div class="v ${cls(st.avg)}">${fmt(st.avg)}</div><div class="l">Avg per session</div></div>
+          <div class="stat"><div class="v pos">${fmt(st.best)}</div><div class="l">Best night${st.bestDate?" · "+st.bestDate.slice(5):""}</div></div>
+          <div class="stat"><div class="v neg">${fmt(st.worst)}</div><div class="l">Worst night${st.worstDate?" · "+st.worstDate.slice(5):""}</div></div>
+          <div class="stat"><div class="v ${st.dir>0?"pos":st.dir<0?"neg":""}">${streakTxt}</div><div class="l">Current streak</div></div>
+          <div class="stat"><div class="v">${st.lw} / ${st.ll}</div><div class="l">Longest win / loss streak</div></div>
+          <div class="stat"><div class="v">±${st.sd.toFixed(2)}</div><div class="l">Volatility (σ)</div></div>
+          <div class="stat"><div class="v">${st.last?st.last.slice(5):"—"}</div><div class="l">Last played</div></div>
+        </div></div>`;
+      pr.appendChild(td); tb.appendChild(pr);
+    }
+  });
+  const total=r2(list.reduce((a,p)=>a+p.net,0));
+  const winners=list.filter(p=>p.net>0), losers=list.filter(p=>p.net<0);
+  const games=sessions.filter(s=>s.kind!=="adjustment").length;
+  $("#tiles").innerHTML=`
+    <div class="tile"><div class="v num ${cls(total)}">${fmt(total)}</div><div class="l">Ledger balance ${Math.abs(total)<0.005?"✓ zero":"(off)"}</div></div>
+    <div class="tile"><div class="v">${games}</div><div class="l">Games logged</div></div>
+    <div class="tile"><div class="v">${list[0]?esc(list[0].name):"—"}</div><div class="l">Leader</div></div>
+    <div class="tile"><div class="v num">${r2(winners.reduce((a,p)=>a+p.net,0)).toFixed(2)}</div><div class="l">Pot in play (${winners.length} up, ${losers.length} down)</div></div>`;
+  $("#opening-note").textContent=opening.asOf?`Includes opening balances carried in as of ${opening.asOf}.`:"";
+  const pl=$("#player-list"); pl.innerHTML="";
+  for(const p of players){
+    const b=document.createElement("button"); b.className="chip"; b.setAttribute("aria-pressed",String(p.active!==false));
+    b.innerHTML=`<span class="dot"></span>${esc(p.name)}`; b.title="Click to toggle whether this player shows in the game roster";
+    b.onclick=async()=>{p.active=!(p.active!==false);await writePlayer(p);renderHome()};
+    pl.appendChild(b);
+  }
+  renderAdjForm(list); renderSettle(list);
+}
+
+function renderAdjForm(list){
+  const opts=list.map(p=>`<option value="${esc(p.name)}">${esc(p.name)} (${fmt(p.net)})</option>`).join("");
+  const to=$("#adj-to"), from=$("#adj-from");
+  const tv=to.value, fv=from.value;
+  to.innerHTML=opts; from.innerHTML=opts;
+  if(tv) to.value=tv; if(fv) from.value=fv; else if(list[1]) from.value=list[0]?.name===to.value?list[1].name:list[0].name;
+  if(!$("#adj-date").value) $("#adj-date").value=gameDate();
+  adjPreview();
+}
+function adjPreview(){
+  const to=$("#adj-to").value, from=$("#adj-from").value, amt=r2(Number($("#adj-amt").value)||0);
+  const pv=$("#adj-preview");
+  if(!to||!from){pv.textContent="";return}
+  if(to===from){pv.textContent="Pick two different players.";return}
+  if(!amt){pv.textContent="";return}
+  const l=standings(); const a=l.find(p=>p.name===to)?.net||0, b=l.find(p=>p.name===from)?.net||0;
+  pv.innerHTML=`${esc(to)}: ${fmt(a)} → <b class="${cls(a+amt)}">${fmt(r2(a+amt))}</b> &nbsp;·&nbsp; ${esc(from)}: ${fmt(b)} → <b class="${cls(b-amt)}">${fmt(r2(b-amt))}</b>`;
+}
+async function saveAdjustment(){
+  const to=$("#adj-to").value, from=$("#adj-from").value, amt=r2(Number($("#adj-amt").value)||0);
+  if(!to||!from||to===from){toast("Pick two different players");return}
+  if(!(amt>0)){toast("Enter an amount");return}
+  const date=$("#adj-date").value||gameDate();
+  const rec={date,stake:0,kind:"adjustment",nets:{[to]:amt,[from]:-amt},mode:"none",note:$("#adj-note").value.trim(),createdAt:new Date().toISOString(),approxDate:false};
+  const id="a"+Date.now();
+  if(db){try{await db.doc("sessions/"+id).set(rec)}catch(e){toast("Save failed");return}} else sessions.push({id,...rec});
+  $("#adj-amt").value=""; $("#adj-note").value=""; toast("Adjustment recorded"); renderHome();
+}
+
+function renderSettle(list){
+  const pays=settlePlan(list); const box=$("#settle");
+  if(!pays.length){box.innerHTML='<div class="empty">Everyone is at zero.</div>';return}
+  box.innerHTML=pays.map(p=>`<div class="pay"><b>${esc(p.from)}</b><span class="arrow">pays →</span><b>${esc(p.to)}</b><span class="num amt">$${p.amt.toFixed(2)}</span></div>`).join("")+
+    `<p class="muted" style="margin:8px 0 0;font-size:.85rem">${pays.length} payment${pays.length>1?"s":""} · $${r2(pays.reduce((a,p)=>a+p.amt,0)).toFixed(2)} changes hands</p>`;
+  $("#settle-copy").onclick=()=>copy("💰 *Settle up*\n\n"+pays.map(p=>`${p.from} → ${p.to}: $${p.amt.toFixed(2)}`).join("\n"));
+  $("#settle-mark").onclick=async ev=>{const b=ev.target;if(b.dataset.arm!=="1"){b.dataset.arm="1";b.textContent="Confirm: zero everyone's balance";setTimeout(()=>{b.dataset.arm="";b.textContent="Mark all as settled (zeroes the ledger)"},3000);return}
+    const nets={}; for(const p of list) if(Math.abs(p.net)>0.004) nets[p.name]=r2(-p.net);
+    const rec={date:gameDate(),stake:0,kind:"adjustment",nets,mode:"none",note:"Full settlement: all balances paid out",createdAt:new Date().toISOString(),approxDate:false};
+    const id="a"+Date.now();
+    if(db){try{await db.doc("sessions/"+id).set(rec)}catch(e){toast("Save failed");return}} else sessions.push({id,...rec});
+    b.dataset.arm="";b.textContent="Mark all as settled (zeroes the ledger)"; toast("Ledger settled to zero"); renderHome()};
+}
+
+function renderWiz(){
+  const steps=wiz.direct?[1,2,3,5]:[1,2,3,4,5];
+  for(let i=1;i<=5;i++){const el=$("#s"+i); el.hidden=!steps.includes(i); el.className=i<=wiz.step?"on":""}
+  const w=$("#wiz"); w.className="fade";
+  const roster=players.filter(p=>p.active!==false).map(p=>p.name);
+  const editing=wiz.editId?`<span class="tag adj">Editing ${esc(wiz.date)}</span>`:"";
+  if(wiz.step===1){
+    w.innerHTML=`<div class="row" style="justify-content:space-between"><h2>Who's playing tonight?</h2><div class="row">${editing}<span class="muted">${wiz.selected.length} selected</span></div></div>
+      <div class="row" style="margin:12px 0 4px"><div class="switch"><button id="m-live" aria-pressed="${!wiz.direct}">Track buy-ins live</button><button id="m-direct" aria-pressed="${wiz.direct}">Enter final nets</button></div></div>
+      <div class="chips" style="margin:10px 0 14px" id="sel"></div>
+      <div class="row" style="justify-content:space-between;margin-top:6px">
+        <label class="checkbox">Minimum players <input type="number" id="minp" min="2" max="15" value="${settings.minPlayers}" style="width:70px"></label>
+        <div class="row"><button class="btn ghost" id="w-reset">${wiz.editId?"Cancel edit":"Reset draft"}</button><button class="btn primary" id="w-next" ${wiz.selected.length<settings.minPlayers?"disabled":""}>Next: stake</button></div>
+      </div>`;
+    const sel=$("#sel");
+    for(const n of roster){
+      const b=document.createElement("button"); b.className="chip"; const on=wiz.selected.includes(n);
+      b.setAttribute("aria-pressed",String(on)); b.innerHTML=`<span class="dot"></span>${esc(n)}`;
+      b.onclick=()=>{wiz.selected=on?wiz.selected.filter(x=>x!==n):[...wiz.selected,n];saveDraft();renderWiz()};
+      sel.appendChild(b);
+    }
+    if(!roster.length) sel.innerHTML='<div class="empty">No active players. Add them on the Standings tab.</div>';
+    $("#m-live").onclick=()=>{wiz.direct=false;saveDraft();renderWiz()};
+    $("#m-direct").onclick=()=>{wiz.direct=true;saveDraft();renderWiz()};
+    $("#minp").onchange=async e=>{settings.minPlayers=Math.max(2,Number(e.target.value)||2);await writeSettings();renderWiz()};
+    $("#w-reset").onclick=()=>{wiz=freshWiz();clearDraft();renderWiz()};
+    $("#w-next").onclick=()=>{wiz.step=2;saveDraft();renderWiz()};
+  }
+  else if(wiz.step===2){
+    w.innerHTML=`<h2>Buy-in size</h2><p class="muted" style="margin:4px 0 14px">Blinds stay at $${SB.toFixed(2)} / $${BB.toFixed(2)} for both games.</p>
+      <div class="stake">
+        <button class="stakebtn" id="st55" aria-pressed="${wiz.stake===5.5}"><div class="big">$5.50</div><div class="muted">55 big blinds per buy-in</div></button>
+        <button class="stakebtn" id="st10" aria-pressed="${wiz.stake===10}"><div class="big">$10</div><div class="muted">100 big blinds per buy-in</div></button>
+      </div>
+      <div class="row" style="justify-content:space-between;margin-top:16px"><button class="btn ghost" id="w-back">Back</button><button class="btn primary" id="w-next" ${!wiz.stake?"disabled":""}>${wiz.direct?"Next: enter nets":"Next: track buy-ins"}</button></div>`;
+    $("#st55").onclick=()=>{wiz.stake=5.5;saveDraft();renderWiz()};
+    $("#st10").onclick=()=>{wiz.stake=10;saveDraft();renderWiz()};
+    $("#w-back").onclick=()=>{wiz.step=1;saveDraft();renderWiz()};
+    $("#w-next").onclick=()=>{if(!wiz.direct) for(const n of wiz.selected) if(!wiz.buyins[n]) wiz.buyins[n]=1; wiz.step=3;saveDraft();renderWiz()};
+  }
+  else if(wiz.step===3&&wiz.direct){
+    const nets=rawNets(); const sum=r2(Object.values(nets).reduce((a,v)=>a+v,0));
+    w.innerHTML=`<div class="row" style="justify-content:space-between"><h2>Final nets · $${wiz.stake} game</h2>${editing}</div>
+      <p class="muted" style="margin:4px 0 10px">Type each player's result for the night (negative for a loss).</p>
+      <div id="rows"></div>
+      <div class="total"><div><div class="eyebrow">Session total</div><div class="v num ${cls(sum)}" id="dsum">${fmt(sum)}</div></div><div class="muted">should be 0.00</div></div>
+      <div class="row" style="justify-content:space-between;margin-top:16px"><button class="btn ghost" id="w-back">Back</button><button class="btn primary" id="w-next">Check for zero</button></div>`;
+    const rows=$("#rows");
+    for(const n of wiz.selected){
+      const d=document.createElement("div"); d.className="prow";
+      d.innerHTML=`<div class="nm">${esc(n)}</div><div class="row"><span class="muted">$</span><input type="number" step="0.05" inputmode="decimal" id="dn-${slug(n)}" value="${wiz.directNets[n]??""}" placeholder="0.00" aria-label="Net for ${esc(n)}"></div>`;
+      const inp=d.querySelector("input");
+      inp.oninput=()=>{wiz.directNets[n]=inp.value;saveDraft();const s2=r2(Object.values(rawNets()).reduce((a,v)=>a+v,0));const t=$("#dsum");t.textContent=fmt(s2);t.className="v num "+cls(s2)};
+      rows.appendChild(d);
+    }
+    $("#w-back").onclick=()=>{wiz.step=2;saveDraft();renderWiz()};
+    $("#w-next").onclick=()=>{wiz.step=5;wiz.manual=null;saveDraft();renderWiz()};
+  }
+  else if(wiz.step===3){
+    const totalIn=wiz.selected.reduce((a,n)=>a+(wiz.buyins[n]||0),0)*wiz.stake;
+    w.innerHTML=`<div class="row" style="justify-content:space-between"><h2>Live table · $${wiz.stake} buy-ins</h2><span class="tag">In progress</span></div>
+      <p class="muted" style="margin:4px 0 10px">Tap + each time someone rebuys. Everyone starts with one buy-in.</p>
+      <div id="rows"></div>
+      <div class="total"><div><div class="eyebrow">Money on the table</div><div class="v num">$${totalIn.toFixed(2)}</div></div><div class="muted num">${wiz.selected.reduce((a,n)=>a+(wiz.buyins[n]||0),0)} buy-ins</div></div>
+      <div class="row" style="justify-content:space-between;margin-top:16px"><button class="btn ghost" id="w-back">Back</button><button class="btn primary" id="w-next">Game over: enter cash-outs</button></div>`;
+    const rows=$("#rows");
+    for(const n of wiz.selected){
+      const d=document.createElement("div"); d.className="prow";
+      const b=wiz.buyins[n]||0;
+      d.innerHTML=`<div><div class="nm">${esc(n)}</div><div class="sub num">${b} × $${wiz.stake} = $${(b*wiz.stake).toFixed(2)} in</div></div>
+        <div class="counter"><button aria-label="Remove buy-in for ${esc(n)}">−</button><span class="c">${b}</span><button aria-label="Add buy-in for ${esc(n)}">+</button></div>`;
+      d.querySelectorAll("button")[0].onclick=()=>{wiz.buyins[n]=Math.max(0,b-1);saveDraft();renderWiz()};
+      d.querySelectorAll("button")[1].onclick=()=>{wiz.buyins[n]=b+1;saveDraft();renderWiz()};
+      rows.appendChild(d);
+    }
+    $("#w-back").onclick=()=>{wiz.step=2;saveDraft();renderWiz()};
+    $("#w-next").onclick=()=>{wiz.step=4;saveDraft();renderWiz()};
+  }
+  else if(wiz.step===4){
+    const nets=rawNets(); const sum=r2(Object.values(nets).reduce((a,v)=>a+v,0));
+    const totalIn=wiz.selected.reduce((a,n)=>a+(wiz.buyins[n]||0),0)*wiz.stake;
+    const totalOut=wiz.selected.reduce((a,n)=>a+Number(wiz.cashouts[n]||0),0);
+    w.innerHTML=`<h2>Cash-outs</h2><p class="muted" style="margin:4px 0 10px">Enter what each player walked away with. Net = cash-out − buy-ins.</p>
+      <div id="rows"></div>
+      <div class="total"><div><div class="eyebrow">Chips in vs out</div><div class="v num">$${totalIn.toFixed(2)} → $${totalOut.toFixed(2)}</div></div><div class="num ${cls(sum)}" style="font-weight:600">Σ net ${fmt(sum)}</div></div>
+      <div class="row" style="justify-content:space-between;margin-top:16px"><button class="btn ghost" id="w-back">Back</button><button class="btn primary" id="w-next">Check for zero</button></div>`;
+    const rows=$("#rows");
+    for(const n of wiz.selected){
+      const d=document.createElement("div"); d.className="prow";
+      const b=(wiz.buyins[n]||0)*wiz.stake;
+      d.innerHTML=`<div><div class="nm">${esc(n)}</div><div class="sub num">in $${b.toFixed(2)} · net <span class="${cls(nets[n])}">${fmt(nets[n])}</span></div></div>
+        <div class="row"><span class="muted">$</span><input type="number" step="0.05" min="0" inputmode="decimal" id="co-${slug(n)}" value="${wiz.cashouts[n]??""}" placeholder="0.00" aria-label="Cash-out for ${esc(n)}"></div>`;
+      const inp=d.querySelector("input");
+      inp.oninput=()=>{wiz.cashouts[n]=inp.value;saveDraft();
+        const nn=r2(Number(inp.value||0)-b); d.querySelector(".sub span").textContent=fmt(nn); d.querySelector(".sub span").className=cls(nn);
+        const s2=r2(Object.values(rawNets()).reduce((a,v)=>a+v,0)); const t=w.querySelector(".total .num:last-child"); t.textContent="Σ net "+fmt(s2); t.className="num "+cls(s2);
+        const to=wiz.selected.reduce((a,x)=>a+Number(wiz.cashouts[x]||0),0); w.querySelector(".total .v").textContent=`$${totalIn.toFixed(2)} → $${to.toFixed(2)}`};
+      rows.appendChild(d);
+    }
+    $("#w-back").onclick=()=>{wiz.step=3;saveDraft();renderWiz()};
+    $("#w-next").onclick=()=>{wiz.step=5;wiz.manual=null;saveDraft();renderWiz()};
+  }
+  else if(wiz.step===5){
+    const raw=rawNets(); const sum=r2(Object.values(raw).reduce((a,v)=>a+v,0));
+    const ok=Math.abs(sum)<0.005;
+    const fin=finalNets(); const fsum=r2(Object.values(fin).reduce((a,v)=>a+v,0));
+    const list=Object.entries(fin).map(([name,net])=>({name,net})).sort((a,b)=>b.net-a.net);
+    // ledger before this session (excluding the one being edited)
+    const base=standingsExcluding(wiz.editId);
+    const projected=base.map(p=>({...p,net:r2(p.net+(fin[p.name]||0))}));
+    for(const n of Object.keys(fin)) if(!projected.find(p=>p.name===n)) projected.push({name:n,net:fin[n],sessions:0});
+    projected.sort((a,b)=>b.net-a.net);
+    const modes=[
+      ["losers-safe","Protect losers","Losers pay exactly what they lost. Winners absorb the gap, weighted by how much they won."],
+      ["losers-weighted","Losers absorb (weighted)","Winners keep their full win. Losers share the gap in proportion to their losses."],
+      ["equal","Everyone equally","Split the gap evenly across all players at the table."],
+      ["manual","Manual","Edit any player's net yourself."]];
+    const rec={date:wiz.date,stake:wiz.stake,nets:fin,note:wiz.note||""};
+    w.innerHTML=`<div class="row" style="justify-content:space-between"><h2>Check for zero</h2>${editing}</div>
+      <div class="verdict ${ok?"ok":"off"}" style="margin:10px 0 14px"><div class="v num ${cls(sum)}">${fmt(sum)}</div><div>${ok?"<b>Balances.</b> Every dollar in is accounted for.":`<b>Off by ${fmt(sum)}.</b> ${sum>0?"More cashed out than bought in.":"Less cashed out than bought in."} Pick how to settle it.`}</div></div>
+      ${ok?"":`<div class="eyebrow" style="margin-bottom:8px">Settlement</div><div class="modes" id="modes"></div>`}
+      <div style="margin-top:16px;overflow-x:auto"><table><thead><tr><th>Player</th>${wiz.direct?"":'<th class="r">Buy-ins</th>'}<th class="r">Raw</th><th class="r">${ok?"Net":"Settled"}</th><th class="r">Ledger after</th></tr></thead><tbody id="fin"></tbody></table></div>
+      <div class="row" style="justify-content:space-between;margin-top:10px"><span class="muted">Settled total</span><b class="num ${cls(fsum)}">${fmt(fsum)}</b></div>
+      <div class="row" style="margin-top:14px"><label class="checkbox">Date <input type="date" id="wdate" value="${esc(wiz.date||gameDate())}"></label><input type="text" id="note" placeholder="Note (optional)" value="${esc(wiz.note||"")}" style="flex:1;min-width:180px"></div>
+      <div class="row" style="justify-content:space-between;margin-top:16px"><button class="btn ghost" id="w-back">Back</button>
+        <div class="row"><button class="btn" id="w-copy">Copy session + ledger</button><button class="btn primary" id="w-save" ${Math.abs(fsum)>0.005?"disabled":""}>${wiz.saved?"Saved ✓":wiz.editId?"Save changes":"Save session to ledger"}</button></div></div>
+      ${wiz.saved?`<div class="card" style="margin-top:16px;background:var(--felt-soft);border-color:var(--felt)"><h3 style="color:var(--felt)">Saved. Message for the group</h3><pre class="msg" id="final-msg">${esc(sessionMessage(rec,standings()))}</pre><div class="row" style="margin-top:10px"><button class="btn" id="copy-final">Copy session + ledger</button><button class="btn" id="copy-ledger">Copy ledger only</button><button class="btn primary" id="go-home">Done</button></div></div>`:""}`;
+    if(!ok){
+      const mm=$("#modes");
+      for(const [k,t,d] of modes){const b=document.createElement("button");b.className="mode";b.setAttribute("aria-pressed",String(wiz.mode===k));b.innerHTML=`<b>${t}</b><small>${d}</small>`;b.onclick=()=>{wiz.mode=k;if(k==="manual"&&!wiz.manual)wiz.manual={...balance(raw,"losers-safe")};saveDraft();renderWiz()};mm.appendChild(b)}
+    }
+    const tb=$("#fin");
+    for(const p of list){
+      const tr=document.createElement("tr");
+      const cell=wiz.mode==="manual"&&!ok?`<input type="number" step="0.01" value="${fin[p.name]}" data-n="${esc(p.name)}" style="width:95px">`:`<span class="num ${cls(p.net)}">${fmt(p.net)}</span>`;
+      const pj=projected.find(x=>x.name===p.name);
+      tr.innerHTML=`<td><b>${esc(p.name)}</b></td>${wiz.direct?"":`<td class="r num muted">${wiz.buyins[p.name]||0}</td>`}<td class="r num ${cls(raw[p.name])}">${fmt(raw[p.name])}</td><td class="r">${cell}</td><td class="r num ${cls(pj.net)}">${fmt(pj.net)}</td>`;
+      tb.appendChild(tr);
+    }
+    tb.querySelectorAll("input").forEach(i=>i.onchange=()=>{wiz.manual[i.dataset.n]=r2(Number(i.value)||0);saveDraft();renderWiz()});
+    $("#note").oninput=e=>{wiz.note=e.target.value;saveDraft()};
+    $("#wdate").onchange=e=>{wiz.date=e.target.value||gameDate();saveDraft()};
+    $("#w-back").onclick=()=>{wiz.step=wiz.direct?3:4;saveDraft();renderWiz()};
+    $("#w-copy").onclick=()=>copy(sessionMessage({...rec,note:wiz.note},projected));
+    $("#w-save").onclick=saveSession;
+    if(wiz.saved){$("#copy-final").onclick=()=>copy(sessionMessage(rec,standings()));$("#copy-ledger").onclick=()=>copy(whatsapp(standings()));$("#go-home").onclick=()=>{wiz=freshWiz();clearDraft();setView("home")}}
+  }
+}
+function standingsExcluding(id){
+  if(!id) return standings();
+  const keep=sessions; sessions=sessions.filter(s=>s.id!==id); const r=standings(); sessions=keep; return r;
+}
+
+function renderRecords(){
+  const games=orderedSessions().filter(s=>s.kind!=="adjustment");
+  const box=$("#records");
+  if(!games.length){box.innerHTML='<div class="empty">No games yet.</div>';return}
+  let bw={v:-Infinity},wn={v:Infinity},bigPot={v:-1},crowd={v:-1};
+  for(const s of games){
+    for(const [n,v] of Object.entries(s.nets)){ if(v>bw.v)bw={v,n,d:s.date}; if(v<wn.v)wn={v,n,d:s.date}; }
+    const pot=Object.values(s.nets).filter(v=>v>0).reduce((a,b)=>a+b,0); if(pot>bigPot.v)bigPot={v:pot,d:s.date};
+    const k=Object.keys(s.nets).length; if(k>crowd.v)crowd={v:k,d:s.date};
+  }
+  const names=standings().map(p=>p.name);
+  const st=names.map(n=>({n,...playerStats(n)})).filter(p=>p.n>=3);
+  const vol=[...st].sort((a,b)=>b.sd-a.sd)[0];
+  const steady=[...st].sort((a,b)=>a.sd-b.sd)[0];
+  const wr=[...st].filter(p=>p.n>=5).sort((a,b)=>(b.wins/b.n)-(a.wins/a.n))[0];
+  const lw=[...st].sort((a,b)=>b.lw-a.lw)[0], ll=[...st].sort((a,b)=>b.ll-a.ll)[0];
+  const most=[...st].sort((a,b)=>b.n-a.n)[0];
+  const hot=[...st].filter(p=>p.dir>0).sort((a,b)=>b.streak-a.streak)[0];
+  const cold=[...st].filter(p=>p.dir<0).sort((a,b)=>b.streak-a.streak)[0];
+  const t=(v,l,s)=>`<div class="tile"><div class="v">${v}</div><div class="l">${l}</div>${s?`<div class="s muted">${s}</div>`:""}</div>`;
+  box.innerHTML=
+    t(`<span class="num pos">${fmt(bw.v)}</span>`,"Biggest win",`${esc(bw.n)} · ${bw.d}`)+
+    t(`<span class="num neg">${fmt(wn.v)}</span>`,"Worst night",`${esc(wn.n)} · ${wn.d}`)+
+    t(`<span class="num">$${bigPot.v.toFixed(2)}</span>`,"Biggest pot moved",bigPot.d)+
+    (wr?t(`${Math.round(100*wr.wins/wr.n)}%`,"Best win rate (5+ games)",`${esc(wr.n)} · ${wr.wins}–${wr.losses}`):"")+
+    (vol?t(`±${vol.sd.toFixed(2)}`,"Most volatile",esc(vol.n)):"")+
+    (steady?t(`±${steady.sd.toFixed(2)}`,"Steadiest",esc(steady.n)):"")+
+    (lw?t(lw.lw,"Longest win streak",esc(lw.n)):"")+
+    (ll?t(ll.ll,"Longest losing streak",esc(ll.n)):"")+
+    (hot?t(`${hot.streak} 🔥`,"Hottest right now",esc(hot.n)):"")+
+    (cold?t(`${cold.streak} 🧊`,"Coldest right now",esc(cold.n)):"")+
+    (most?t(most.n,"Most games played",esc(most.n)):"")+
+    t(crowd.v,"Fullest table",crowd.d);
+}
+
+function renderHistory(){
+  renderRecords();
+  if(typeof Chart==="undefined"){renderSessionsList();return}
+  const list=standings();
+  const names=list.map(p=>p.name);
+  const ordered=orderedSessions();
+  const labels=["Opening",...ordered.map(s=>(s.approxDate?"≈":"")+(s.date||"").slice(5)+(s.kind==="adjustment"?" adj":" · $"+s.stake))];
+  const palette=["#c8373b","#2f5fb3","#1f7a46","#b8891c","#7a3fb3","#1b9aaa","#d26a1e","#5a5a5a","#e04a8a","#4a7c2c","#8c5a2b","#2b6a8c","#a83a8c","#6b6b2b","#3a8c8c"];
+  const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  const fg=css("--fg"), line=css("--line"), muted=css("--muted");
+  Chart.defaults.color=muted; Chart.defaults.font.family=getComputedStyle(document.body).fontFamily;
+  const datasets=names.map((n,i)=>{let v=r2(opening.balances?.[n]||0);const data=[v];for(const s of ordered){v=r2(v+(s.nets?.[n]||0));data.push(v)}
+    return{label:n,data,borderColor:palette[i%palette.length],backgroundColor:palette[i%palette.length],tension:.25,pointRadius:2,borderWidth:2}});
+  if(charts.line) charts.line.destroy();
+  charts.line=new Chart($("#chart-line"),{type:"line",data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,animation:{duration:900,easing:"easeOutQuart"},interaction:{mode:"nearest",intersect:false},plugins:{legend:{position:"bottom",labels:{boxWidth:10,usePointStyle:true}}},scales:{x:{grid:{color:line},ticks:{maxTicksLimit:12}},y:{grid:{color:line},ticks:{callback:v=>"$"+v}}}}});
+  if(charts.bar) charts.bar.destroy();
+  charts.bar=new Chart($("#chart-bar"),{type:"bar",data:{labels:names,datasets:[{data:list.map(p=>p.net),backgroundColor:list.map(p=>p.net>=0?css("--win"):css("--loss")),borderRadius:4}]},options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,animation:{duration:900,easing:"easeOutQuart"},plugins:{legend:{display:false}},scales:{x:{grid:{color:line},ticks:{callback:v=>"$"+v}},y:{grid:{display:false},ticks:{color:fg}}}}});
+  renderSessionsList();
+}
+function renderSessionsList(){
+  const ordered=orderedSessions();
+  const box=$("#sessions"); box.innerHTML="";
+  if(!sessions.length) box.innerHTML='<div class="empty">No sessions logged yet. The first game you save appears here.</div>';
+  for(const s of [...ordered].reverse()){
+    const d=document.createElement("div"); d.className="sess";
+    const e=Object.entries(s.nets||{}).sort((a,b)=>b[1]-a[1]);
+    const isAdj=s.kind==="adjustment";
+    d.innerHTML=`<div style="min-width:0"><div><b>${s.approxDate?"≈ ":""}${esc(s.date||"")}</b> <span class="tag ${isAdj?"adj":""}">${isAdj?"Adjustment":"$"+s.stake+" game"}</span> <span class="muted" style="font-size:.85rem">${e.length} players${s.note?" · "+esc(s.note):""}</span></div>
+      <div class="who">${e.map(([n,v])=>`${esc(n)} <span class="num ${cls(v)}">${fmt(v)}</span>`).join(" · ")}</div></div>
+      <div class="row" style="flex-wrap:nowrap"><button class="btn sm" data-act="copy">Copy</button>${isAdj?"":'<button data-write class="btn sm" data-act="edit">Edit</button>'}<button data-write class="btn sm danger" data-act="del">Delete</button></div>`;
+    d.querySelector('[data-act="copy"]').onclick=()=>copy(sessionMessage(s,standings()));
+    const ed=d.querySelector('[data-act="edit"]'); if(ed) ed.onclick=()=>editSession(s);
+    d.querySelector('[data-act="del"]').onclick=async ev=>{const b=ev.target;if(b.dataset.arm!=="1"){b.dataset.arm="1";b.textContent="Confirm";setTimeout(()=>{b.dataset.arm="";b.textContent="Delete"},2500);return}
+      if(db){try{await db.doc("sessions/"+s.id).delete()}catch(e){toast("Delete failed");return}} else {sessions=sessions.filter(x=>x.id!==s.id);renderHistory()} toast("Deleted")};
+    box.appendChild(d);
+  }
+}
+function editSession(s){
+  const w=freshWiz();
+  w.editId=s.id; w.editCreatedAt=s.createdAt||null; w.date=s.date||gameDate(); w.note=s.note||""; w.stake=s.stake||10;
+  w.selected=Object.keys(s.nets||{});
+  if(s.buyins&&s.cashouts&&Object.keys(s.buyins).length){ w.direct=false; w.buyins={...s.buyins}; w.cashouts=Object.fromEntries(Object.entries(s.cashouts).map(([k,v])=>[k,String(v)])); w.step=4; }
+  else { w.direct=true; w.directNets=Object.fromEntries(Object.entries(s.raw||s.nets).map(([k,v])=>[k,String(v)])); w.step=3; }
+  w.mode=s.mode&&s.mode!=="none"?s.mode:"losers-safe";
+  wiz=w; saveDraft(); setView("game"); toast("Editing session. Save to overwrite it.");
+}
+
+function copy(text){
+  const done=()=>toast("Copied");
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(()=>fallback())}else fallback();
+  function fallback(){const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");done()}catch(e){toast("Select and copy the text manually")}ta.remove()}
+}
+
+// ---------- persistence ----------
+async function writePlayer(p){ if(!db) return; try{await db.doc("players/"+p.id).set({name:p.name,active:p.active!==false,createdAt:p.createdAt||new Date().toISOString()})}catch(e){toast("Couldn't save player")} }
+async function writeSettings(){ if(!db) return; try{await db.doc("meta/settings").set({minPlayers:settings.minPlayers})}catch(e){} }
+async function addPlayer(name){
+  name=name.trim(); if(!name) return;
+  if(players.find(p=>p.name.toLowerCase()===name.toLowerCase())){toast("Already on the roster");return}
+  const p={id:slug(name)||("p"+Date.now()),name,active:true,createdAt:new Date().toISOString()};
+  players.push(p); await writePlayer(p); renderHome(); toast(name+" added");
+}
+async function saveSession(){
+  const fin=finalNets(); const fsum=r2(Object.values(fin).reduce((a,v)=>a+v,0));
+  if(Math.abs(fsum)>0.005){toast("Settle to zero before saving");return}
+  const id=wiz.editId||("s"+Date.now());
+  const rec={date:wiz.date||gameDate(),stake:wiz.stake,kind:"game",nets:fin,raw:rawNets(),mode:wiz.mode,note:wiz.note||"",createdAt:wiz.editCreatedAt||new Date().toISOString(),updatedAt:new Date().toISOString(),approxDate:false};
+  if(!wiz.direct){rec.buyins={...wiz.buyins};rec.cashouts=Object.fromEntries(wiz.selected.map(n=>[n,Number(wiz.cashouts[n]||0)]))} else rec.entry="direct";
+  for(const n of Object.keys(fin)) if(!players.find(p=>p.name===n)) await addPlayer(n);
+  if(db){try{await db.doc("sessions/"+id).set(rec)}catch(e){toast("Save failed: "+(e&&e.message||"try again"));return}}
+  else {sessions=sessions.filter(s=>s.id!==id);sessions.push({id,...rec})}
+  wiz.saved=true; wiz.resultId=id; saveDraft(); renderWiz(); toast(wiz.editId?"Session updated":"Session saved");
+}
+
+// ---------- boot ----------
+$("#btn-start-home").onclick=()=>{if(wiz.editId){wiz=freshWiz();clearDraft()}setView("game")};
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>setView(t.dataset.view));
+$("#btn-copy-standings").onclick=()=>copy(whatsapp(standings()));
+$("#btn-add-player").onclick=()=>{addPlayer($("#new-player").value);$("#new-player").value=""};
+$("#new-player").onkeydown=e=>{if(e.key==="Enter"){addPlayer(e.target.value);e.target.value=""}};
+["#adj-to","#adj-from","#adj-amt"].forEach(s=>{$(s).oninput=adjPreview;$(s).onchange=adjPreview});
+$("#adj-save").onclick=saveAdjustment;
+$("#adj-zero").onclick=()=>{const to=$("#adj-to").value;const p=standings().find(x=>x.name===to);if(!p)return;if(p.net>=0){toast(to+" is not negative");return}$("#adj-amt").value=Math.abs(p.net).toFixed(2);adjPreview()};
+const hash=(location.hash||"").slice(1); if(["home","game","history"].includes(hash)) view=hash;
+setView(view);
+
+(async()=>{
+  document.body.classList.add("readonly");
+  if(view==="game"){view="home";setView("home")}
+  try{
+    const r=await fetch("data.json",{cache:"no-store"}); const d=await r.json();
+    opening=d.opening||opening; players=d.players||[]; sessions=d.sessions||[];
+    $("#asof").textContent=d.exportedAt?`Updated ${d.exportedAt}.`:"";
+    rerender();
+  }catch(e){ $("#opening-note").textContent="Couldn't load the ledger data."; }
+})();
+function rerender(){ if(view==="home")renderHome(); else if(view==="history")renderHistory(); else if(wiz.step===1||wiz.step===5)renderWiz(); }
+})();
+</script>
+
+</body>
+</html>
