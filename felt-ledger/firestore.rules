@@ -7,7 +7,7 @@ service cloud.firestore {
       // Only these signed-in Google accounts can log games, adjustments and edits.
       allow write: if request.auth != null
         && request.auth.token.email_verified == true
-        && request.auth.token.email.lower() in ['EDITOR_EMAIL_HERE'];
+        && request.auth.token.email.lower() in ['adityajbhatia@gmail.com'];
     }
   }
 }
